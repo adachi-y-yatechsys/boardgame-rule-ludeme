@@ -1,0 +1,27 @@
+name: Ludeme PoC
+description: Ludeme 語彙導入 PoC を進めるためのタスク
+title: "Ludeme PoC: {phase}"
+labels: ["ludeme","poc"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        目的: Ludeme 語彙を既存モデルに非破壊でマッピングし、KPI を満たすこと。
+  - type: checkboxes
+    id: kpi
+    attributes:
+      label: KPI（粒度/エビデンス/ライセンス）
+      options:
+        - label: 粒度一致 ≥ 70%
+        - label: CI（validate/build/alloy/dist）Green
+        - label: 法務承認の記録
+  - type: textarea
+    id: scope
+    attributes:
+      label: スコープ
+      placeholder: 対象 Fact/Variant（最低10件）…
+  - type: textarea
+    id: outputs
+    attributes:
+      label: 期待する出力
+      placeholder: checklists/kpi.md, mapping/matrix.csv, PRリンクなど
