@@ -21,13 +21,21 @@
    - 定義: Fact/Variant に付与する語彙ブロックが、Ludeme の語彙階層（Move/Board/Piece/Goal/Condition 等）と**1:1 or 1:多**で矛盾なく対応している割合。  
    - 測定: 代表10項目（SETUP/TURN/WIN 主要項目）で**対応表**を作成し、**「完全一致/要派生/不可」**の比率で評価。目標 **完全一致 ≥ 70%**。
 
-2. **エビデンス記述適合度 (Evidence Compatibility)**  
-   - 定義: 両者のメタデータ（説明、出典、注釈）が**JSON Schema の `evidence`**、**Alloy の `Evidence` 型**にロスなく写像できる度合い。  
+2. **エビデンス記述適合度 (Evidence Compatibility)**
+   - 定義: 両者のメタデータ（説明、出典、注釈）が**JSON Schema の `evidence`**、**Alloy の `Evidence` 型**にロスなく写像できる度合い。
    - 測定: Catan seed の各 Fact/Variant に **`evidence[*].sourceId/page/loc`** が欠落なく保持されること。**Schema/Alloy CI 100% Green**。
 
-3. **ライセンス整合度 (License Compatibility)**  
-   - 定義: 本リポジトリの商用運用において、Ludii/Ludeme の**ライセンス条件**に抵触しないこと。  
+3. **ライセンス整合度 (License Compatibility)**
+   - 定義: 本リポジトリの商用運用において、Ludii/Ludeme の**ライセンス条件**に抵触しないこと。
    - 判定: **非同梱・非二次配布・引用は出典明記**・文言転載は**短い引用に限定**であること。法務チェックの**承認取得**。
+
+### KPI 検証マトリクス
+
+| 評価観点 | 検証手順 | 判定基準 |
+| --- | --- | --- |
+| 粒度一致度 | 1. `docs/mapping/matrix.csv` の対象 10 項目をレビュー<br>2. `mapping_type` と補足ノートを用いて「完全一致/要派生/不可」を分類<br>3. 70% 以上が「完全一致」になるよう不足語彙を補正 | - 「完全一致」 ≥ 70%<br>- `notes` に派生理由とUI影響が記載されている |
+| エビデンス記述適合度 | 1. `validate:models` → `check:alloy` → `build` → `validate:dist` を連続実行<br>2. 生成物の `evidence` 差分を比較レポートで確認<br>3. 欠落があればマッピングと Seed を補正 | - 4段階のCIが全て成功<br>- `evidence` 欄で `sourceId/page/loc` が欠落ゼロ |
+| ライセンス整合度 | 1. 追加語彙に引用が必要かを洗い出し出典を明記<br>2. 同梱物リストをレビューし、Ludii 配布物非同梱を確認<br>3. 法務レビュー結果を `docs/legal/approval.md` に記録 | - 配布物に Ludii バイナリ/全文が含まれない<br>- 引用箇所に出典表記がある<br>- 法務承認の記録が最新 |
 
 ## 4. 語彙棚卸し（Ludeme → 本モデル）
 

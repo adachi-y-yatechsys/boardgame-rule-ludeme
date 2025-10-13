@@ -1,1 +1,11 @@
 model_id,fact_tag,current_text,proposed_ludeme.category,proposed_ludeme.term,mapping_type,evidence_source_id,page,notes
+catan_base.board_setup,SETUP,六角タイルをランダムに配置し、数字チップを並べる。,equipment,tileArrangement,derived,rulebook_jp5_pdf,TBD,既存SETUPをLudiiのequipment系語彙へ対応させる案。
+catan_base.initial_placement,SETUP,初期配置は順番に開拓地と道を置き、逆順でもう一度置く。,start,placeSettlementRoad,derived,rulebook_jp5_pdf,TBD,開始時の配置シーケンスをLudiiのstart/place構文へ寄せる。
+catan_base.turn_roll,TURN,自分の番の開始時に2個のサイコロを振る。,play,rollDice,exact,rulebook_jp5_pdf,TBD,Ludiiの`play`-`roll`語彙に一致。
+catan_base.turn_production,TURN,出目の土地から隣接する開拓地/都市へ資源が配られる。,play,distributeResources,derived,rulebook_jp5_pdf,TBD,資源配分は複合処理のため`derived`扱い。
+catan_base.robber_on_seven,RESOLVE,7が出たら盗賊を移動し、隣接プレイヤーから資源を1枚奪う。,play,moveRobberSteal,derived,rulebook_jp5_pdf,TBD,移動と奪取の複合手番で派生語彙が必要。
+catan_base.victory_condition,WIN,勝利点が10に到達したプレイヤーが勝つ。,end,scoreThreshold,exact,rulebook_jp5_pdf,TBD,Ludiiのend条件`Score`系と1:1対応。
+catan_base.players_3_tile_removal,SETUP,3人は六角タイルを2枚外して17枚にする。,start,trimBoard,derived,rulebook_jp5_pdf,TBD,プレイヤー人数に応じた盤面調整で派生扱い。
+catan_base.variant.base_novice.robber_on_seven,RESOLVE,7が出たら盗賊を移動。資源を奪うかは任意。,play,optionalSteal,derived,official_rules_web,,盗賊奪取の任意化を示す派生語彙。
+catan_base.variant.friendly_robber.robber_on_seven,RESOLVE,7が出たら盗賊を移動。得点3未満の相手からは奪わない。,play,restrictedSteal,derived,official_rules_web,,条件付き奪取の派生語彙。
+catan_base.variant.base_novice,VARIANT,初心者向けルールセットで盗賊奪取が任意となる。,option,novicePreset,exact,official_rules_web,,Ludiiのoption/parameterに相当するプリセット。
