@@ -1,0 +1,55 @@
+name: codex-router
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  route:
+    if: contains(github.event.comment.body, '@codex')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Route command
+        id: route
+        run: |
+          python .github/scripts/codex_router.py <<'EOF'
+          ${{ github.event.comment.body }}
+          EOF
+
+      - name: Commit changes (if any)
+        run: |
+          branch="codex/${{ steps.route.outputs.branch_suffix || 'update' }}"
+          git config user.name "codex-router[bot]"
+          git config user.email "codex-router[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          if [ -n "$(git status --porcelain)" ]; then
+            git add -A
+            git commit -m "chore(codex): apply ${branch} changes"
+            git push -u origin "$branch"
+            # Open or update PR
+            gh pr create --title "codex: ${branch}" --body "Automated update from @codex router." || gh pr edit "$branch" --add-label codex
+          else
+            echo "No file changes to commit."
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Acknowledge
+        run: |
+          number="${{ github.event.issue.number || github.event.pull_request.number }}"
+          gh issue comment "$number" --body "$(cat .codex_router.out)"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
