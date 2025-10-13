@@ -1,4 +1,4 @@
 series,edition,entry_id,field,change_type,previous_value,new_value,status,notes
-catan,5th,qna-001,qa_text,updated,"旧ルール: 盗賊は資源カードを奪う","更新: Ludeme 参照で盗賊効果を明文化",review,"Ludeme 導入に伴う用語統一"
+catan,5th,qna-001,qa_text,updated,"旧ルール: 盗賊は資源カードを奪う","更新: 盗賊を移動し、隣接プレイヤーから資源カードを1枚奪取する（Ludeme: moveRobberSteal）",confirmed,"訳語を統一し、旧訳との差異をレビューで承認"
 catan,5th,qna-001,citation,added,,"BGG#CatanRulebook2020",confirmed,"引用元の追加"
 catan,5th,qna-001,evidence,unchanged,"画像ID:setup-board","画像ID:setup-board",n/a,"差分なしを確認"

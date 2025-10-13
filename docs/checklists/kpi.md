@@ -18,7 +18,7 @@
 ### エビデンス記述適合度（Evidence Compatibility）
 - [ ] `evidence[*].sourceId/page/loc` がマッピング後も欠落していない（現状: page=`TBD` のまま）。
 - [ ] CI（`validate:models` → `check:alloy` → `build` → `validate:dist`）がすべて Green（現状: 実施待ち）。
-- [ ] 差分レポートで Q&A と citations が PoC 前後で一致（現状: `qa_text` 更新1件=review／`citation` 追加1件=confirmed／`evidence` 変化なし1件=n/a → 用語統一レビュー待ち）。
+- [ ] 差分レポートで Q&A と citations が PoC 前後で一致（現状: `qa_text` 統一済=confirmed／`citation` 追加1件=confirmed／`evidence` 変化なし1件=n/a）。
 
 ### ライセンス整合度（License Compatibility）
 - [ ] Ludii/Ludeme 配布物の同梱・改変配布を行っていない（現状: 同梱なし、定期監査手順未策定）。
@@ -29,7 +29,7 @@
 
 | KPI軸 | diff_report ステータス集計 | リスク/備考 |
 | --- | --- | --- |
-| 粒度一致度 | `qa_text` 更新1件 = **review** | 用語統一が未確定のためレビュー継続。 |
+| 粒度一致度 | `qa_text` 更新1件 = **confirmed** | 用語統一: 盗賊アクションを「移動＋資源カード1枚奪取」で統一。 |
 | エビデンス適合度 | `citation` 追加1件 = **confirmed**／`evidence` 変化なし1件 = **n/a** | 引用IDは整合済み。画像証跡は変更なしを確認済み。 |
 | ライセンス整合度 | 該当差分なし | 監査手順と承認記録の更新が未実施。 |
 
@@ -43,7 +43,7 @@
 - 粒度評価の判定ルールを `mapping_type` 以外に明文化する（例: `exact/derived/hold` の定義、測定方法）。
 - エビデンス整合チェックを自動化する CI 手順（Phase 2 で実装予定）を整理する。
 - ライセンス監査の承認フロー（担当者・記録場所・頻度）を法務と確認する。
-- diff レポートで review 判定となった `qa_text` の用語統一を Phase 3 内で確定させる。
+- 差分レポートの `qa_text` 統一訳（盗賊アクション＝移動＋資源カード1枚奪取）が維持されているかを Phase 4 CI でモニタリングする。
 
 ## 参照ドキュメント
 - `docs/requirements/16_ludeme_integration.md`
