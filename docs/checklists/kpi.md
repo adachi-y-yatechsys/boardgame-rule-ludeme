@@ -18,12 +18,20 @@
 ### エビデンス記述適合度（Evidence Compatibility）
 - [ ] `evidence[*].sourceId/page/loc` がマッピング後も欠落していない（現状: page=`TBD` のまま）。
 - [ ] CI（`validate:models` → `check:alloy` → `build` → `validate:dist`）がすべて Green（現状: 実施待ち）。
-- [ ] 差分レポートで Q&A と citations が PoC 前後で一致（現状: レポート生成手順未整備）。
+- [ ] 差分レポートで Q&A と citations が PoC 前後で一致（現状: `qa_text` 更新1件=review／`citation` 追加1件=confirmed／`evidence` 変化なし1件=n/a → 用語統一レビュー待ち）。
 
 ### ライセンス整合度（License Compatibility）
 - [ ] Ludii/Ludeme 配布物の同梱・改変配布を行っていない（現状: 同梱なし、定期監査手順未策定）。
 - [ ] 語彙・短い文言の引用には出典明記を行っている（現状: `notes` 欄に出典メモ未記載）。
 - [ ] 法務レビューの承認を記録した（現状: `docs/legal/approval.md` 未更新）。
+
+### 差分レポート集計（最新）
+
+| KPI軸 | diff_report ステータス集計 | リスク/備考 |
+| --- | --- | --- |
+| 粒度一致度 | `qa_text` 更新1件 = **review** | 用語統一が未確定のためレビュー継続。 |
+| エビデンス適合度 | `citation` 追加1件 = **confirmed**／`evidence` 変化なし1件 = **n/a** | 引用IDは整合済み。画像証跡は変更なしを確認済み。 |
+| ライセンス整合度 | 該当差分なし | 監査手順と承認記録の更新が未実施。 |
 
 ## DOR/DOD トラッキング
 - [ ] Catan seed の対象 Fact/Variant が 10 項目以上選定済み（現状: 10件を暫定選定、粒度バランス要見直し）。
@@ -35,6 +43,7 @@
 - 粒度評価の判定ルールを `mapping_type` 以外に明文化する（例: `exact/derived/hold` の定義、測定方法）。
 - エビデンス整合チェックを自動化する CI 手順（Phase 2 で実装予定）を整理する。
 - ライセンス監査の承認フロー（担当者・記録場所・頻度）を法務と確認する。
+- diff レポートで review 判定となった `qa_text` の用語統一を Phase 3 内で確定させる。
 
 ## 参照ドキュメント
 - `docs/requirements/16_ludeme_integration.md`
