@@ -1,0 +1,6 @@
+model_id,fact_tag,current_text,proposed_ludeme.category,proposed_ludeme.term,mapping_type,evidence_source_id,page,notes
+board_setup,SETUP,初期配置と資源配分,setup,init,exact,rulebook_jp5_pdf,3,""
+initial_placement,SETUP,開拓地→道の順で2回配置,move,placement,exact,rulebook_jp5_pdf,4,"2-3-2 配置に注意"
+robber_on_seven,TURN,サイコロ合計7で盗賊移動,rule,exception,derived,rulebook_jp5_pdf,7,"Ludemeに例外項あり"
+longest_road,RESOLVE,最長交易路の表彰,score,award,derived,rulebook_jp5_pdf,9,"勝利点+2の扱い"
+victory_condition,WIN,勝利点に到達したプレイヤーが勝利,end,goal,exact,rulebook_jp5_pdf,2,""
