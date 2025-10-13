@@ -1,4 +1,4 @@
-# boardgame-rule-ludem
+# boardgame-rule-ludeme
 
 Ludeme 語彙を既存のボードゲーム・ルールモデルに非破壊で参照導入する検証プロジェクト。
 - 目的: 語彙整合・表現力向上・引用管理の強化
@@ -13,7 +13,15 @@ Ludeme 語彙を既存のボードゲーム・ルールモデルに非破壊で�
 ### 目的
 - validate → alloy → build → validate:dist + overlay の一連の検証を標準化し、Ludeme 拡張が既存モデルへ非破壊で適用できることを確認する。
 
+### 前提
+- このリポジトリはドキュメント／レポート用のスケルトンであり、`package.json`・`spec/`・`schemas/overlays/`・`dist/` などの検証対象資材は同梱されていない。
+- 実際の検証は、メンテナが管理するルールモデル本体（例: `ludeme-integration` ブランチ付きリポジトリや CI 用テンプレート）を別途クローンして実施する。
+  - 例: `git clone <maintainer-shared-repo-url> ludeme-ci-workspace && cd ludeme-ci-workspace`
+  - `package.json` に本節で言及する npm スクリプトが定義されていること、`spec/` および `schemas/overlays/` 配下に検証対象ファイルが配置されていることを確認する。
+- `reports/ludeme/` ディレクトリは CI 実行環境と本ドキュメントの両方から参照できる共有パス（例: Git ワークスペース直下）に揃えておく。
+
 ### 手順
+0. **ワークスペースの整備**: 前提の通り検証用リポジトリを用意し、`npm install` を実行して依存関係を取得する。必要に応じてこのドキュメントを隣接させ、CI が生成する差分レポートの配置先を `reports/ludeme/` に合わせる。
 1. **ベースモデルの検証**: `npm run validate:models` を実行し、既存 JSON Schema / データモデルの整合性を確かめる。
 2. **Alloy 制約チェック**: `npm run check:alloy` で `spec/base.als` の存在制約を検証し、基礎ルールが充足することを確認する。
 3. **ビルド**: `npm run build` を実行し、配布物 (`dist/`) を生成する。
@@ -28,6 +36,5 @@ Ludeme 語彙を既存のボードゲーム・ルールモデルに非破壊で�
 - `reports/ludeme/` に差分レポート（CSV/JSON）が生成され、検証対象の Q&A・引用・エビデンス差分が整理されている。
 
 ### 参考
-- `docs/requirements/16c_ci_pipeline.md`
-- `spec/base.als`、`spec/ludeme_ext.als`
-- `schemas/overlays/`
+- `AGENTS.md`
+- `reports/ludeme/diff_report.csv`、`reports/ludeme/diff_report.json`
