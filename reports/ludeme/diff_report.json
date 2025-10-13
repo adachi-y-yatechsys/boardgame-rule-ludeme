@@ -6,9 +6,9 @@
     "field": "qa_text",
     "change_type": "updated",
     "previous_value": "旧ルール: 盗賊は資源カードを奪う",
-    "new_value": "更新: Ludeme 参照で盗賊効果を明文化",
-    "status": "review",
-    "notes": "用語統一の確認が必要"
+    "new_value": "更新: 盗賊を移動し、隣接プレイヤーから資源カードを1枚奪取する（Ludeme: moveRobberSteal）",
+    "status": "confirmed",
+    "notes": "訳語統一を Phase 3 用語レビューで承認"
   },
   {
     "series": "catan",

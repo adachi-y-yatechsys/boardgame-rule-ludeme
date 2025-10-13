@@ -29,4 +29,5 @@
 - 11-acceptance-criteria.md（受け入れ基準）
 - 12-open-questions.md（未決事項）
 - 16-ludeme-integration.md（Ludeme語彙統合の検証計画）
+- 16f-ci-diff-verification.md（Phase 4 差分検証ジョブ設計メモ）
 
