@@ -1,0 +1,35 @@
+[
+  {
+    "series": "catan",
+    "edition": "5th",
+    "entry_id": "qna-001",
+    "field": "qa_text",
+    "change_type": "updated",
+    "previous_value": "旧ルール: 盗賊は資源カードを奪う",
+    "new_value": "更新: Ludeme 参照で盗賊効果を明文化",
+    "status": "review",
+    "notes": "用語統一の確認が必要"
+  },
+  {
+    "series": "catan",
+    "edition": "5th",
+    "entry_id": "qna-001",
+    "field": "citation",
+    "change_type": "added",
+    "previous_value": "",
+    "new_value": "BGG#CatanRulebook2020",
+    "status": "confirmed",
+    "notes": "引用元を追加し参照IDを紐付け"
+  },
+  {
+    "series": "catan",
+    "edition": "5th",
+    "entry_id": "qna-001",
+    "field": "evidence",
+    "change_type": "unchanged",
+    "previous_value": "画像ID:setup-board",
+    "new_value": "画像ID:setup-board",
+    "status": "n/a",
+    "notes": "差分なしを確認"
+  }
+]
