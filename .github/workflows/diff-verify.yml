@@ -1,0 +1,59 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+name: diff-verify (PoC)
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - feature/phase4-diff-verify-poc
+    paths:
+      - 'reports/ludeme/**'
+      - 'docs/**'
+      - '.github/workflows/diff-verify.yml'
+
+jobs:
+  diff-verify:
+    if: github.ref != 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-diff.txt || true  # CLI 実装前の PoC ではスキップ可能
+
+      - name: Run diff verify CLI (stub)
+        run: |
+          echo "::notice title=diff-verify::CLI implementation pending (see docs/requirements/16f_ci_diff_verification.md)"
+
+      - name: Publish placeholder GitHub Check
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'diff:verify',
+              head_sha: context.payload.pull_request ? context.payload.pull_request.head.sha : context.sha,
+              status: 'completed',
+              conclusion: 'neutral',
+              output: {
+                title: 'Ludeme diff verification (PoC stub)',
+                summary: 'Implementation pending. Refer to docs/requirements/16f_ci_diff_verification.md for next steps.',
+              },
+            });
+
+      - name: Slack notification placeholder
+        if: failure()
+        run: |
+          echo 'Slack notification skipped (PoC stub)'
