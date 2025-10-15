@@ -1,3 +1,4 @@
 # Phase 4 diff verify CLI dependencies (PoC)
+click>=8.1
 # requests is kept for future webhook dry-run scripts.
 requests>=2.31
