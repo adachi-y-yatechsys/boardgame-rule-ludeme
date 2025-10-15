@@ -42,7 +42,57 @@ jobs:
             --glossary docs/glossary/ludeme_terms.csv \
             --output reports/ludeme/diff_verify_results.json \
             --slack-payload reports/ludeme/slack_payload.json \
+            --archive-dir reports/ludeme/archive \
+            --archive-label run-${{ github.run_number }} \
             --format json
+
+      - name: Augment Slack payload with run metadata
+        if: always()
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          slack_path = Path('reports/ludeme/slack_payload.json')
+          if not slack_path.exists():
+              raise SystemExit('Slack payload missing')
+
+          payload = json.loads(slack_path.read_text(encoding='utf-8'))
+          results_path = Path('reports/ludeme/diff_verify_results.json')
+          archive_path = None
+          if results_path.exists():
+              results = json.loads(results_path.read_text(encoding='utf-8'))
+              archive_path = results.get('archive', {}).get('path')
+
+          repo = os.environ['GITHUB_REPOSITORY']
+          run_id = os.environ['GITHUB_RUN_ID']
+          run_number = os.environ['GITHUB_RUN_NUMBER']
+          run_url = f"https://github.com/{repo}/actions/runs/{run_id}"
+
+          attachments = payload.setdefault('attachments', [])
+          if attachments:
+              fields = attachments[0].setdefault('fields', [])
+
+              def upsert(title: str, value: str) -> None:
+                  for field in fields:
+                      if field.get('title', '').lower() == title.lower():
+                          field['value'] = value
+                          break
+                  else:
+                      fields.append({'title': title, 'value': value, 'short': False})
+
+              upsert('Checks', run_url)
+              upsert('Re-run', f"workflow_dispatch (run-{run_number})")
+              if archive_path:
+                  upsert('Archive', archive_path)
+
+          slack_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding='utf-8')
+          PY
 
       - name: Upload diff verify results
         if: always()
@@ -52,6 +102,7 @@ jobs:
           path: |
             reports/ludeme/diff_verify_results.json
             reports/ludeme/slack_payload.json
+            reports/ludeme/archive
 
       - name: Publish GitHub Check
         if: always()
@@ -61,6 +112,14 @@ jobs:
             const fs = require('fs');
             const payload = JSON.parse(fs.readFileSync('reports/ludeme/diff_verify_results.json', 'utf8'));
             const annotations = payload.checks_payload.annotations.slice(0, 50);
+            const repo = process.env.GITHUB_REPOSITORY;
+            const runId = process.env.GITHUB_RUN_ID;
+            let summary = payload.summary;
+            if (payload.archive && payload.archive.path) {
+              summary += `\nArchive: ${payload.archive.path}`;
+            }
+            summary += `\nRun: https://github.com/${repo}/actions/runs/${runId}`;
+            summary += `\nRe-run: Use workflow_dispatch or push updated commits.`;
             await github.rest.checks.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -70,7 +129,7 @@ jobs:
               conclusion: payload.checks_payload.conclusion,
               output: {
                 title: 'Ludeme diff verification',
-                summary: payload.summary,
+                summary,
                 annotations,
               },
             });
@@ -90,6 +149,10 @@ jobs:
           output_file = Path(os.environ['GITHUB_OUTPUT'])
           with output_file.open('a', encoding='utf-8') as fh:
               fh.write(f"notify={'true' if should_notify else 'false'}\n")
+              archive_path = payload.get('archive', {}).get('path', '')
+              fh.write(f"archive_path={archive_path}\n")
+              run_url = f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}"
+              fh.write(f"run_url={run_url}\n")
           PY
 
       - name: Notify Slack
@@ -102,5 +165,10 @@ jobs:
       - name: Fail workflow if CLI reported failures
         if: steps.diff_verify.outcome == 'failure'
         run: |
-          echo "diff:verify detected failures. See annotations and Slack notification for details." >&2
+          archive_path="${{ steps.slack.outputs.archive_path }}"
+          if [ -z "$archive_path" ]; then
+            archive_path='reports/ludeme/archive'
+          fi
+          echo "diff:verify detected failures. See annotations, Slack notification, and archive at ${archive_path}." >&2
+          echo "Re-run via workflow_dispatch or push new commits. Run URL: ${{ steps.slack.outputs.run_url }}" >&2
           exit 1

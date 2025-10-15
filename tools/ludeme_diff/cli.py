@@ -12,7 +12,13 @@ from .loaders import (
     load_glossary,
     load_mapping_matrix,
 )
-from .outputs import build_result_payload, build_slack_payload, render_table_summary
+from .outputs import (
+    ArchiveRecord,
+    build_result_payload,
+    build_slack_payload,
+    prepare_archive,
+    render_table_summary,
+)
 from .rules import evaluate_entries
 
 
@@ -39,6 +45,20 @@ def main() -> None:
     type=click.Choice(["json", "table"], case_sensitive=False),
     default="json",
 )
+@click.option(
+    "--archive-dir",
+    "archive_dir",
+    type=click.Path(path_type=Path),
+    default=None,
+    help="Directory to store timestamped archives of verification outputs.",
+)
+@click.option(
+    "--archive-label",
+    "archive_label",
+    type=str,
+    default=None,
+    help="Optional label appended to the archive directory name.",
+)
 def verify(
     report_path: Path,
     matrix_path: Path,
@@ -46,6 +66,8 @@ def verify(
     output_path: Path,
     slack_payload_path: Path,
     output_format: str,
+    archive_dir: Path | None,
+    archive_label: str | None,
 ) -> None:
     """Verify diff report entries against glossary and tolerance rules."""
 
@@ -55,6 +77,26 @@ def verify(
 
     result = evaluate_entries(entries, glossary, mapping)
     payload = build_result_payload(result)
+    slack_payload = build_slack_payload(result)
+    archive: ArchiveRecord | None = None
+
+    if archive_dir is not None:
+        archive = prepare_archive(archive_dir, label=archive_label)
+        payload["archive"] = {
+            "path": str(archive.path),
+            "name": archive.path.name,
+            "timestamp": archive.timestamp,
+            "label": archive.label,
+        }
+        attachments = slack_payload.setdefault("attachments", [])
+        if attachments:
+            attachments[0].setdefault("fields", []).append(
+                {
+                    "title": "Archive",
+                    "value": str(archive.path),
+                    "short": False,
+                }
+            )
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with output_path.open("w", encoding="utf-8") as handle:
@@ -62,7 +104,21 @@ def verify(
 
     slack_payload_path.parent.mkdir(parents=True, exist_ok=True)
     with slack_payload_path.open("w", encoding="utf-8") as handle:
-        json.dump(build_slack_payload(result), handle, ensure_ascii=False, indent=2)
+        json.dump(slack_payload, handle, ensure_ascii=False, indent=2)
+
+    if archive is not None:
+        archive.write(
+            payload,
+            slack_payload,
+            inputs={
+                "report": str(report_path),
+                "matrix": str(matrix_path),
+                "glossary": str(glossary_path),
+                "output": str(output_path),
+                "slack_payload": str(slack_payload_path),
+            },
+        )
+        click.echo(f"Archive stored at {archive.path}", err=True)
 
     if output_format == "table":
         click.echo(render_table_summary(result))
