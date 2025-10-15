@@ -19,8 +19,8 @@
 | 実行タイミング | `validate:dist` 完了後に実行し、成果物を再利用 |
 | 入力 | `reports/ludeme/diff_report.json`、`docs/mapping/matrix.csv`、Glossary（予定: `docs/glossary/ludeme_terms.csv`） |
 | 検証ロジック | `qa_text` で統一訳と一致しない差分がある場合は失敗。`citation`/`evidence` の status が `review` 以下の場合も失敗。 |
-| 出力 | `reports/ludeme/diff_verify_results.json`（検知内容・ステータス・対応ガイド） |
-| 通知 | GitHub Checks のアノテーション、Slack Webhook（#ludeme-ci）にサマリを送信 |
+| 出力 | `reports/ludeme/diff_verify_results.json`（検知内容・ステータス・対応ガイド）|
+| 通知 | GitHub Checks のアノテーション、Slack Webhook（#ludeme-ci）にサマリを送信（payload: `reports/ludeme/slack_payload.json`） |
 | リトライ | 差分が解消されるまで自動リトライなし。手動再実行のみ。 |
 
 ### PoC 実装バックログ
@@ -60,15 +60,16 @@
 ### 実装骨子
 
 #### Diff レポートパーサ（P4-BL-01）
-- **コマンド名**: `ludeme-diff verify --report reports/ludeme/diff_report.json --output reports/ludeme/diff_verify_results.json`
+- **コマンド名**: `python -m tools.ludeme_diff.cli verify --report reports/ludeme/diff_report.json --matrix docs/mapping/matrix.csv --glossary docs/glossary/ludeme_terms.csv --output reports/ludeme/diff_verify_results.json`
 - **構成案**:
   - `cli.py`: 引数処理とサブコマンド登録。
   - `parsers/diff_report.py`: JSON/CSV 双方の読み込み、`DiffEntry` データクラス化。
   - `rules/status.py`: `status` 列の集計と `qa_text` / `citation` / `evidence` の失敗条件判定。
   - `reporters/summary.py`: GitHub Checks・Slack に共通利用するサマリ JSON を生成。
 - **失敗条件**:
-  - `qa_text` で Glossary 既定訳と不一致なエントリが存在。
-  - `citation` または `evidence` の `status` が `review`・`pending`・`n/a` のまま検出。
+  - `qa_text` で Glossary 既定訳と不一致なエントリが存在（`update_translation` アクション付与）。
+  - `qa_text` が句読点のみの差異 → `warning` として Slack/Codex follow-up（`confirm_punctuation_diff`）。
+  - `citation` または `evidence` の `status` が `review`・`pending`・`n/a` のまま検出（`update_reference_status`）。
   - Diff レポートのフォーマット不整合（必須フィールド欠損、JSON パースエラー）。
 - **出力**:
   - `summary`: フィールド別失敗件数、最初の 10 件の詳細、再現手順リンク。
@@ -117,87 +118,21 @@
 3. GitHub Checks API（`actions/github-script` または `peter-evans/create-check`）を通じて、失敗時に注釈を投稿。
 4. Slack Webhook 連携のためのシークレット（`SLACK_WEBHOOK_URL`）を PoC ブランチに限定して登録し、通知ジョブに渡す。
 
-### GitHub Actions 雛形
-```yaml
-name: diff-verify
-
-on:
-  workflow_dispatch:
-  pull_request:
-    branches:
-      - feature/phase4-diff-verify-poc
-    paths:
-      - 'reports/ludeme/**'
-      - 'docs/**'
-      - '.github/workflows/diff-verify.yml'
-
-jobs:
-  diff-verify:
-    runs-on: ubuntu-latest
-    permissions:
-      checks: write
-      contents: read
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements-diff.txt
-
-      - name: Run diff verify CLI
-        run: |
-          python -m ludeme_diff.cli verify \
-            --report reports/ludeme/diff_report.json \
-            --matrix docs/mapping/matrix.csv \
-            --glossary docs/glossary/ludeme_terms.csv \
-            --output reports/ludeme/diff_verify_results.json
-
-      - name: Upload diff verify results
-        uses: actions/upload-artifact@v4
-        with:
-          name: diff-verify-results
-          path: reports/ludeme/diff_verify_results.json
-
-      - name: Publish GitHub Check
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const fs = require('fs');
-            const payload = JSON.parse(fs.readFileSync('reports/ludeme/diff_verify_results.json', 'utf8'));
-            const annotations = payload.checks_payload.annotations.slice(0, 50);
-            await github.rest.checks.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              name: 'diff:verify',
-              head_sha: context.payload.pull_request ? context.payload.pull_request.head.sha : context.sha,
-              status: 'completed',
-              conclusion: payload.checks_payload.conclusion,
-              output: {
-                title: 'Ludeme diff verification',
-                summary: payload.summary,
-                annotations,
-              },
-            });
-
-      - name: Notify Slack (conditional)
-        if: failure()
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        run: |
-          curl -X POST -H 'Content-type: application/json' \
-            --data @reports/ludeme/slack_payload.json "$SLACK_WEBHOOK_URL"
-```
+### GitHub Actions 実装メモ（2024-05-17 更新）
+- `.github/workflows/diff-verify.yml` に PoC 用フローを実装済み。
+- `tools.ludeme_diff.cli verify` 実行ステップは `continue-on-error` を指定し、Slack 通知・GitHub Check 生成後に `steps.diff_verify.outcome == 'failure'` で最終失敗判定を行う。
+- 成果物: `reports/ludeme/diff_verify_results.json` と `reports/ludeme/slack_payload.json` をアーティファクト化。
+- Slack 通知条件は CLI 結果 JSON の `failure` または `warning` カウント > 0。`SLACK_WEBHOOK_URL` は PoC ブランチ限定シークレット。
 
 ### PoC 実行条件
-- 依存パッケージは `requirements-diff.txt`（新規作成、`pydantic`, `rich`, `requests` 等）に集約する。
+- 依存パッケージは `requirements-diff.txt`（PoC 時点では `requests` のみ）に集約する。
 - `ludeme_diff.cli` はリポジトリ内の `tools/ludeme_diff/` パッケージとして配置し、`python -m` で呼び出す。
+
+### Codex フォローアップ手順（2024-05-17 更新）
+1. `diff:verify` が `failure` または `warning` を含む場合、Slack #ludeme-ci に CLI 生成の payload（`reports/ludeme/slack_payload.json`）を投稿する。
+2. 同タイミングで Codex スレッドへコメント投稿（テンプレ: `@codex follow-up: diff verify failure`）。対象 `entry_id` と `action_required` を列挙し、担当（依頼者 or 翻訳レビュー）と期限を明記する。
+3. 修正が完了したら ✅ とコミット ID / CI リンクを追記し、再実行条件（`workflow_dispatch` または PR push）を共有して `resolved` を明言する。
+4. 週次レビューで未対応フォローアップ件数を棚卸し、`docs/review/phase3_summary.md` に転記して Phase 4 レトロスペクティブへ引き継ぐ。
 - GitHub Checks 投稿では 50 件を超える注釈を切り捨て、詳細はアーティファクトで確認する運用とする。
 - フォローアップ: チェック失敗時は Codex スレッドで `@codex follow-up: diff verify failure` コメントを投稿し、失敗条件と Slack 通知ログを共有する。
 

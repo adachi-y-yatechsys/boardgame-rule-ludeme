@@ -30,30 +30,77 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements-diff.txt || true  # CLI 実装前の PoC ではスキップ可能
+          pip install -r requirements-diff.txt
 
-      - name: Run diff verify CLI (stub)
+      - name: Run diff verify CLI
+        id: diff_verify
+        continue-on-error: true
         run: |
-          echo "::notice title=diff-verify::CLI implementation pending (see docs/requirements/16f_ci_diff_verification.md)"
+          python -m tools.ludeme_diff.cli verify \
+            --report reports/ludeme/diff_report.json \
+            --matrix docs/mapping/matrix.csv \
+            --glossary docs/glossary/ludeme_terms.csv \
+            --output reports/ludeme/diff_verify_results.json \
+            --slack-payload reports/ludeme/slack_payload.json \
+            --format json
 
-      - name: Publish placeholder GitHub Check
+      - name: Upload diff verify results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: diff-verify-results
+          path: |
+            reports/ludeme/diff_verify_results.json
+            reports/ludeme/slack_payload.json
+
+      - name: Publish GitHub Check
+        if: always()
         uses: actions/github-script@v7
         with:
           script: |
+            const fs = require('fs');
+            const payload = JSON.parse(fs.readFileSync('reports/ludeme/diff_verify_results.json', 'utf8'));
+            const annotations = payload.checks_payload.annotations.slice(0, 50);
             await github.rest.checks.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
               name: 'diff:verify',
               head_sha: context.payload.pull_request ? context.payload.pull_request.head.sha : context.sha,
               status: 'completed',
-              conclusion: 'neutral',
+              conclusion: payload.checks_payload.conclusion,
               output: {
-                title: 'Ludeme diff verification (PoC stub)',
-                summary: 'Implementation pending. Refer to docs/requirements/16f_ci_diff_verification.md for next steps.',
+                title: 'Ludeme diff verification',
+                summary: payload.summary,
+                annotations,
               },
             });
 
-      - name: Slack notification placeholder
-        if: failure()
+      - name: Determine Slack notification requirement
+        id: slack
+        if: always()
         run: |
-          echo 'Slack notification skipped (PoC stub)'
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          payload = json.loads(Path('reports/ludeme/diff_verify_results.json').read_text(encoding='utf-8'))
+          should_notify = payload['status_counts'].get('failure', 0) > 0 or payload['status_counts'].get('warning', 0) > 0
+          import os
+
+          output_file = Path(os.environ['GITHUB_OUTPUT'])
+          with output_file.open('a', encoding='utf-8') as fh:
+              fh.write(f"notify={'true' if should_notify else 'false'}\n")
+          PY
+
+      - name: Notify Slack
+        if: steps.slack.outputs.notify == 'true'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data @reports/ludeme/slack_payload.json "$SLACK_WEBHOOK_URL"
+
+      - name: Fail workflow if CLI reported failures
+        if: steps.diff_verify.outcome == 'failure'
+        run: |
+          echo "diff:verify detected failures. See annotations and Slack notification for details." >&2
+          exit 1

@@ -1,0 +1,4 @@
+term_key,canonical_ja,canonical_en,notes
+moveRobberSteal,盗賊を移動し、隣接プレイヤーから資源カードを1枚奪取する,Move the robber and steal 1 resource,Phase 3 用語レビュー承認
+optionalSteal,盗賊を移動し任意で資源を奪取する,Move robber optional steal,Variant glossary
+restrictedSteal,盗賊を移動し奪取対象を制限する,Move robber restricted steal,Variant glossary

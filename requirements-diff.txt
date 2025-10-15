@@ -1,4 +1,4 @@
 # Phase 4 diff verify CLI dependencies (PoC)
-pydantic>=2.6
-rich>=13.7
+click>=8.1
+# requests is kept for future webhook dry-run scripts.
 requests>=2.31

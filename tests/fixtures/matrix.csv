@@ -1,0 +1,3 @@
+model_id,fact_tag,current_text,proposed_ludeme.category,proposed_ludeme.term,mapping_type,evidence_source_id,page,notes,entry_id
+catan_base.robber_on_seven,RESOLVE,7が出たら盗賊を移動し資源を奪う,play,moveRobberSteal,derived,rulebook,10,テスト用,qna-001
+catan_base.variant.optional,RESOLVE,7が出たら盗賊を移動し任意で資源を奪う,play,optionalSteal,derived,rulebook,11,テスト用,qna-002
