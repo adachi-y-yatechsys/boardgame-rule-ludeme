@@ -24,7 +24,7 @@ tools/
     __init__.py
     cli.py                  # click / argparse で `verify` サブコマンド定義
     loaders/
-      diff_report.py        # JSON/CSV 読み込み・バリデーション（pydantic）
+      diff_report.py        # JSON/CSV 読み込み・バリデーション
     rules/
       status.py             # status 判定ロジック（critical/warning/info）
       tolerance.py          # 許容差分判定（P4-BL-05 連携）
@@ -38,6 +38,7 @@ tests/
 - `verify` サブコマンドは `--report` `--matrix` `--glossary` `--output` `--format json|table` をサポート。
 - 失敗時は exit code 1、警告のみの場合は 0（Slack info のみ）。
 - CLI 実装担当: ChatGPT（CI 支援）。レビュー: 依頼者（CI オーナー）。レビュー期限: 2024-05-13 EOD JST。
+- 2024-05-17 更新: `tools/ludeme_diff/cli.py` に `verify` サブコマンドを実装。差分検出時は JSON/Slack payload を生成し exit code 1 を返す。担当: ChatGPT（CI 支援）。レビュー期限: 2024-05-20。
 
 #### P4-BL-02: Glossary 照合モジュール
 - 入力: `docs/glossary/ludeme_terms.csv`（列: `term_key`,`canonical_ja`,`canonical_en`,`notes`）。
@@ -48,6 +49,19 @@ tests/
   3. 完全一致しない場合は `status = failure`、`needs_glossary` タグを付与。
 - アウトプット: CLI `summary` JSON に `glossary_actions` 配列（`entry_id`,`term_key`,`action_required`）を追加。
 - 担当: 実装 ChatGPT（翻訳補助）、Glossary レビュー 依頼者（QA）。期限: 2024-05-17。
+- 2024-05-17 更新: `docs/glossary/ludeme_terms.csv` を参照し、`tools/ludeme_diff/rules/tolerance.py` で句読点のみの揺れを `warning` 判定（P4-BL-05 連携）。Glossary 未登録語は `register_glossary_term` アクションを付与。
+
+### 実装アップデート（2024-05-17）
+- **CLI/Glossary**: `tools/ludeme_diff` パッケージに loaders/rules/outputs を配置し、`ludeme-diff verify`（`python -m tools.ludeme_diff.cli verify`）で JSON, table 出力に対応。`tests/test_cli_verify.py` と `tests/test_rules_status.py` で E2E/ユニットをカバー。
+- **差分許容ルール（P4-BL-05）**: `rules/tolerance.py` で Unicode NFKC 正規化と句読点除去により許容判定を実装。`warning` 判定は Slack/Codex フォローアップ対象。
+- **CI/通知（P4-BL-03/P4-BL-04）**: `.github/workflows/diff-verify.yml` を更新し、PoC ブランチで CLI 実行→成果物アップロード→GitHub Check→Slack 通知を自動化。`SLACK_WEBHOOK_URL` は PoC 限定シークレットを想定。
+- **担当と期限**: CLI/Glossary 実装: ChatGPT（CI 支援） 2024-05-20 レビューまで。CI/通知統合: 依頼者（CI オーナー） 2024-05-22 チェック確認。Slack テンプレ承認: 依頼者（統合担当） 2024-05-24。
+
+### 失敗条件と通知パターン
+- `qa_text` が Glossary と乖離 → `failure`（`update_translation`）: GitHub Check `failure` + Slack red アラート + Codex フォローアップ。
+- `qa_text` が句読点のみの差異 → `warning`（`confirm_punctuation_diff`）: GitHub Check `warning` annotation + Slack yellow 通知。
+- `citation`/`evidence` の `status` が `pending`/`review`/`n/a` → `failure`（`update_reference_status`）。
+- Slack 通知条件: 失敗または警告件数 > 0。Codex コメントテンプレは `docs/requirements/16f_ci_diff_verification.md` に従う。
 
 ### CI・通知準備
 - GitHub Actions 雛形は `docs/requirements/16f_ci_diff_verification.md` に準拠し、`requirements-diff.txt` を生成。

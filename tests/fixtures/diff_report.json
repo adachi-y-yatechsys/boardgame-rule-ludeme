@@ -1,0 +1,46 @@
+[
+  {
+    "series": "catan",
+    "edition": "5th",
+    "entry_id": "qna-001",
+    "field": "qa_text",
+    "change_type": "updated",
+    "previous_value": "旧訳",
+    "new_value": "盗賊を移動し、隣接プレイヤーから資源カードを1枚奪取する（Ludeme: moveRobberSteal）",
+    "status": "confirmed",
+    "notes": "テスト用: Glossary 一致"
+  },
+  {
+    "series": "catan",
+    "edition": "5th",
+    "entry_id": "qna-001",
+    "field": "citation",
+    "change_type": "added",
+    "previous_value": "",
+    "new_value": "BGG#Test",
+    "status": "confirmed",
+    "notes": "テスト用: 参照OK"
+  },
+  {
+    "series": "catan",
+    "edition": "5th",
+    "entry_id": "qna-002",
+    "field": "qa_text",
+    "change_type": "updated",
+    "previous_value": "旧訳",
+    "new_value": "盗賊を移動し、任意で資源を奪取する（Ludeme: optionalSteal）",
+    "status": "confirmed",
+    "notes": "テスト用: 句読点差分"
+  },
+  {
+    "series": "catan",
+    "edition": "5th",
+    "entry_id": "qna-003",
+    "field": "citation",
+    "change_type": "unchanged",
+    "previous_value": "",
+    "new_value": "BGG#Pending",
+    "status": "pending",
+    "notes": "テスト用: 失敗"
+  }
+]
