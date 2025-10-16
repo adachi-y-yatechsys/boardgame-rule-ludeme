@@ -63,6 +63,10 @@ def test_verify_cli_archives_outputs(tmp_path: Path) -> None:
             str(archive_dir),
             "--archive-label",
             "CI Run",
+            "--run-id",
+            "run-42",
+            "--branch",
+            "feature/test-branch",
         ],
     )
 
@@ -77,6 +81,10 @@ def test_verify_cli_archives_outputs(tmp_path: Path) -> None:
 
     metadata = json.loads((archive_path / "metadata.json").read_text(encoding="utf-8"))
     assert metadata["status_counts"]["failure"] > 0
+    assert metadata["run_id"] == "run-42"
+    assert metadata["branch"] == "feature/test-branch"
+    assert metadata["status"] == "failure"
+    assert metadata["artifact_path"].endswith(archive_path.name)
     assert (archive_path / "diff_verify_results.json").exists()
     assert (archive_path / "slack_payload.json").exists()
     slack_payload = json.loads(slack.read_text(encoding="utf-8"))
@@ -86,3 +94,67 @@ def test_verify_cli_archives_outputs(tmp_path: Path) -> None:
         if field["title"].lower() == "archive"
     )
     assert archive_path.name in archive_field["value"]
+
+
+def test_archives_list_and_inspect(tmp_path: Path) -> None:
+    runner = CliRunner()
+    archive_dir = tmp_path / "archive"
+    output = tmp_path / "diff_verify_results.json"
+    slack = tmp_path / "slack_payload.json"
+
+    verify_result = runner.invoke(
+        main,
+        [
+            "verify",
+            "--report",
+            str(FIXTURE_DIR / "diff_report.json"),
+            "--matrix",
+            str(FIXTURE_DIR / "matrix.csv"),
+            "--glossary",
+            str(Path("docs/glossary/ludeme_terms.csv")),
+            "--output",
+            str(output),
+            "--slack-payload",
+            str(slack),
+            "--archive-dir",
+            str(archive_dir),
+            "--run-id",
+            "run-77",
+            "--branch",
+            "feature/demo",
+        ],
+    )
+
+    assert verify_result.exit_code == 1
+
+    list_result = runner.invoke(
+        main,
+        [
+            "diff:archives",
+            "list",
+            "--archive-dir",
+            str(archive_dir),
+            "--latest",
+        ],
+    )
+    assert list_result.exit_code == 0
+    listings = json.loads(list_result.output)
+    assert len(listings) == 1
+    assert listings[0]["run_id"] == "run-77"
+    assert listings[0]["branch"] == "feature/demo"
+    assert listings[0]["artifact_path"]
+
+    inspect_result = runner.invoke(
+        main,
+        [
+            "diff:archives",
+            "inspect",
+            "run-77",
+            "--archive-dir",
+            str(archive_dir),
+        ],
+    )
+    assert inspect_result.exit_code == 0
+    inspection = json.loads(inspect_result.output)
+    assert inspection["run_id"] == "run-77"
+    assert inspection["files_status"]["diff_verify_results"]["exists"] is True

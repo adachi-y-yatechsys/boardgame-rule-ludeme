@@ -23,6 +23,7 @@
 | 出力 | `reports/ludeme/diff_verify_results.json`（検知内容・ステータス・対応ガイド）、`reports/ludeme/archive/<timestamp>-<label>/`（結果/Slack payload/metadata を保存）|
 | 通知 | GitHub Checks のアノテーション、Slack Webhook（#ludeme-ci）にサマリを送信（payload: `reports/ludeme/slack_payload.json`） |
 | リトライ | 差分が解消されるまで自動リトライなし。手動再実行のみ。 |
+| 履歴参照 | `tools.ludeme_diff.cli diff:archives list --latest --count 5` で最新 5 件を取得し、`diff:archives inspect <run-id>` で詳細を確認。結果は `reports/ludeme/archive/latest_summary.json` に保存し、Codex/Slack で共有。 |
 
 ### PoC 実装バックログ
 | ID | 項目 | 概要 | 優先度 | 担当（案） |
@@ -123,24 +124,26 @@
 3. GitHub Checks API（`actions/github-script` または `peter-evans/create-check`）を通じて、失敗時に注釈を投稿。
 4. Slack Webhook 連携のためのシークレット（`SLACK_WEBHOOK_URL`）を PoC ブランチに限定して登録し、通知ジョブに渡す。
 
-### GitHub Actions 実装メモ（2024-05-17 更新）
+### GitHub Actions 実装メモ（2024-05-27 更新）
 - `.github/workflows/diff-verify.yml` に PoC 用フローを実装済み。
 - `tools.ludeme_diff.cli verify` 実行ステップは `continue-on-error` を指定し、Slack 通知・GitHub Check 生成後に `steps.diff_verify.outcome == 'failure'` で最終失敗判定を行う。
-- 成果物: `reports/ludeme/diff_verify_results.json` と `reports/ludeme/slack_payload.json`、`reports/ludeme/archive/**` をアーティファクト化（Run 番号のディレクトリを含む）。
-- GitHub Checks summary の末尾に `Archive: reports/ludeme/archive/<timestamp>-run-xxxx/metadata.json` を追記し、Slack payload にも同じパスを `fields` として追加する。
-- Slack 通知条件は CLI 結果 JSON の `failure` または `warning` カウント > 0。`SLACK_WEBHOOK_URL` は PoC ブランチ限定シークレット。
+- 成果物: `reports/ludeme/diff_verify_results.json` と `reports/ludeme/slack_payload.json`、`reports/ludeme/archive/**` をアーティファクト化（Run 番号のディレクトリを含む）。ジョブ完了後に `diff:archives list --latest --count 5 --output reports/ludeme/archive/latest_summary.json` を実行し、最新 5 件のサマリ JSON を成果物として追加する。
+- GitHub Checks summary の末尾に `Archive: reports/ludeme/archive/<timestamp>-run-xxxx/metadata.json` を追記し、Slack payload にも同じパスを `fields` として追加する。Slack には `Latest Archive` フィールドで `latest_summary.json` 内の `artifact_path`（GitHub Actions run へのディープリンク）を掲載し、`diff:archives inspect <run-id>` 実行ガイドを併記する。
+- Slack 通知条件は CLI 結果 JSON の `failure` または `warning` カウント > 0。`SLACK_WEBHOOK_URL` は PoC ブランチ限定シークレット。通知本文は `diff:archives list --latest` の結果を参照し、Codex テンプレに必要な `Archive`・`Re-run` 情報を揃える。
+- ローカル/手動レビュー向けに `python reports/ludeme/archive/generate_summary.py --count 5` を追加し、Phase 4 M5 の週次レビューで `latest_summary.json` を Slack `#ludeme-ci` に掲示する。
 
 ### PoC 実行条件
 - 依存パッケージは `requirements-diff.txt`（PoC 時点では `requests` のみ）に集約する。
 - `ludeme_diff.cli` はリポジトリ内の `tools/ludeme_diff/` パッケージとして配置し、`python -m` で呼び出す。
 
 ### Codex フォローアップ手順（2024-05-17 更新）
-1. `diff:verify` が `failure` または `warning` を含む場合、Slack #ludeme-ci に CLI 生成の payload（`reports/ludeme/slack_payload.json`）を投稿する。
-2. 同タイミングで Codex スレッドへコメント投稿（テンプレ: `@codex follow-up: diff verify failure`）。対象 `entry_id` と `action_required` を列挙し、担当（依頼者 or 翻訳レビュー）と期限を明記する。
-3. 修正が完了したら ✅ とコミット ID / CI リンクを追記し、再実行条件（`workflow_dispatch` または PR push）を共有して `resolved` を明言する。
-4. 週次レビューで未対応フォローアップ件数を棚卸し、`docs/review/phase3_summary.md` に転記して Phase 4 レトロスペクティブへ引き継ぐ。
+- 1. `diff:verify` が `failure` または `warning` を含む場合、Slack #ludeme-ci に CLI 生成の payload（`reports/ludeme/slack_payload.json`）を投稿する。
+- 2. 同タイミングで Codex スレッドへコメント投稿（テンプレ: `@codex follow-up: diff verify failure`）。対象 `entry_id` と `action_required` を列挙し、担当（依頼者 or 翻訳レビュー）と期限を明記する。
+- 3. 修正が完了したら ✅ とコミット ID / CI リンクを追記し、再実行条件（`workflow_dispatch` または PR push）を共有して `resolved` を明言する。
+- 4. 週次レビューで未対応フォローアップ件数を棚卸し、`docs/review/phase3_summary.md` に転記して Phase 4 レトロスペクティブへ引き継ぐ。
 - GitHub Checks 投稿では 50 件を超える注釈を切り捨て、詳細はアーティファクトで確認する運用とする。
 - フォローアップ: チェック失敗時は Codex スレッドで `@codex follow-up: diff verify failure` コメントを投稿し、失敗条件と Slack 通知ログを共有する。
+- 週次レビューでは Slack `#ludeme-ci` のスレッドと `reports/ludeme/archive/latest_summary.json` を突合し、担当（依頼者: CI オーナー）が `diff:archives inspect <run-id>` の結果を添付してエスカレーション/再実行計画を明文化する（Phase 4 M5 運用要件）。
 
 ### 判定基準
 - `diff:verify` ジョブの YAML 雛形が PoC ブランチのみに影響する構成で定義されている。
