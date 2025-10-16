@@ -32,11 +32,22 @@ def test_verify_cli_outputs_json_and_exit_code(tmp_path: Path) -> None:
 
     assert result.exit_code == 1
 
-    payload_text = output.read_text(encoding="utf-8")
-    assert "Phase 4 diff verification concluded" in payload_text
+    payload = json.loads(output.read_text(encoding="utf-8"))
+    assert "Phase 4 diff verification concluded" in payload["summary"]
+    glossary_actions = payload["glossary_actions"]
+    assert any(
+        action["entry_id"] == "qna-002" and action["action_required"] == "confirm_punctuation_diff"
+        for action in glossary_actions
+    )
 
-    slack_text = slack.read_text(encoding="utf-8")
-    assert "Ludeme diff verification report" in slack_text
+    slack_payload = json.loads(slack.read_text(encoding="utf-8"))
+    assert slack_payload["text"] == "Ludeme diff verification report"
+    glossary_field = next(
+        field
+        for field in slack_payload["attachments"][0]["fields"]
+        if field["title"].lower() == "glossary actions"
+    )
+    assert "qna-002" in glossary_field["value"]
 
 
 def test_verify_cli_archives_outputs(tmp_path: Path) -> None:
@@ -85,6 +96,10 @@ def test_verify_cli_archives_outputs(tmp_path: Path) -> None:
     assert metadata["branch"] == "feature/test-branch"
     assert metadata["status"] == "failure"
     assert metadata["artifact_path"].endswith(archive_path.name)
+    assert any(
+        action["entry_id"] == "qna-002" and action["action_required"] == "confirm_punctuation_diff"
+        for action in metadata["glossary_actions"]
+    )
     assert (archive_path / "diff_verify_results.json").exists()
     assert (archive_path / "slack_payload.json").exists()
     slack_payload = json.loads(slack.read_text(encoding="utf-8"))
