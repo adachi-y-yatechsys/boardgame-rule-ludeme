@@ -1,11 +1,14 @@
 model_id,fact_tag,current_text,proposed_ludeme.category,proposed_ludeme.term,mapping_type,evidence_source_id,page,notes
-catan_base.board_setup,SETUP,六角タイルをランダムに配置し、数字チップを並べる。,equipment,tileArrangement,derived,rulebook_jp5_pdf,TBD,既存SETUPをLudiiのequipment系語彙へ対応させる案。
-catan_base.initial_placement,SETUP,初期配置は順番に開拓地と道を置き、逆順でもう一度置く。,start,placeSettlementRoad,derived,rulebook_jp5_pdf,TBD,開始時の配置シーケンスをLudiiのstart/place構文へ寄せる。
-catan_base.turn_roll,TURN,自分の番の開始時に2個のサイコロを振る。,play,rollDice,exact,rulebook_jp5_pdf,TBD,Ludiiの`play`-`roll`語彙に一致。
-catan_base.turn_production,TURN,出目の土地から隣接する開拓地/都市へ資源が配られる。,play,distributeResources,derived,rulebook_jp5_pdf,TBD,資源配分は複合処理のため`derived`扱い。
-catan_base.robber_on_seven,RESOLVE,7が出たら盗賊を移動し、隣接プレイヤーから資源を1枚奪う。,play,moveRobberSteal,derived,rulebook_jp5_pdf,TBD,移動と奪取の複合手番で派生語彙が必要。
-catan_base.victory_condition,WIN,勝利点が10に到達したプレイヤーが勝つ。,end,scoreThreshold,exact,rulebook_jp5_pdf,TBD,Ludiiのend条件`Score`系と1:1対応。
-catan_base.players_3_tile_removal,SETUP,3人は六角タイルを2枚外して17枚にする。,start,trimBoard,derived,rulebook_jp5_pdf,TBD,プレイヤー人数に応じた盤面調整で派生扱い。
-catan_base.variant.base_novice.robber_on_seven,RESOLVE,7が出たら盗賊を移動。資源を奪うかは任意。,play,optionalSteal,derived,official_rules_web,,盗賊奪取の任意化を示す派生語彙。
-catan_base.variant.friendly_robber.robber_on_seven,RESOLVE,7が出たら盗賊を移動。得点3未満の相手からは奪わない。,play,restrictedSteal,derived,official_rules_web,,条件付き奪取の派生語彙。
-catan_base.variant.base_novice,VARIANT,初心者向けルールセットで盗賊奪取が任意となる。,option,novicePreset,exact,official_rules_web,,Ludiiのoption/parameterに相当するプリセット。
+catan_base.board_setup,SETUP,六角タイルをランダムに配置し、数字チップを並べる。,equipment,tileArrangement,derived,rulebook_jp5_pdf,TBD,出典: rulebook_jp5_pdf（p.TBD／ランダム配置手順をequipment語彙へ対応）。
+catan_base.initial_placement,SETUP,初期配置は順番に開拓地と道を置き、逆順でもう一度置く。,start,placeSettlementRoad,derived,rulebook_jp5_pdf,TBD,出典: rulebook_jp5_pdf（p.TBD／先行後攻の配置ループをstart語彙に寄せる）。
+catan_base.players_3_tile_removal,SETUP,3人は六角タイルを2枚外して17枚にする。,start,trimBoard,derived,rulebook_jp5_pdf,TBD,出典: rulebook_jp5_pdf（p.TBD／プレイヤー人数調整を派生語彙で保持）。
+catan_base.turn_roll,TURN,自分の番の開始時に2個のサイコロを振る。,play,rollDice,exact,rulebook_jp5_pdf,TBD,出典: rulebook_jp5_pdf（p.TBD／Ludiiのplay-roll構文と一致）。
+catan_base.turn_production,TURN,出目の土地から隣接する開拓地/都市へ資源が配られる。,play,distributeResources,derived,rulebook_jp5_pdf,TBD,出典: rulebook_jp5_pdf（p.TBD／資源配分ロジックを派生語彙で表現）。
+catan_base.robber_on_seven,RESOLVE,7が出たら盗賊を移動し、隣接プレイヤーから資源を1枚奪う。,play,moveRobberSteal,derived,rulebook_jp5_pdf,TBD,出典: rulebook_jp5_pdf（p.TBD／移動と奪取の複合手番）。
+catan_base.development_knight_resolution,RESOLVE,騎士カードを使って盗賊を移動し対象プレイヤーから資源を奪う。,play,knightCommand,hold,rulebook_jp5_pdf,TBD,出典: rulebook_jp5_pdf（p.TBD／開発カード処理に専用語彙が必要か要検討）。
+catan_base.variant.base_novice.robber_on_seven,RESOLVE,7が出たら盗賊を移動。資源を奪うかは任意。,play,optionalSteal,derived,official_rules_web,,出典: official_rules_web（盗賊奪取を任意化するバリアント）。
+catan_base.variant.friendly_robber.robber_on_seven,RESOLVE,7が出たら盗賊を移動。得点3未満の相手からは奪わない。,play,restrictedSteal,derived,official_rules_web,,出典: official_rules_web（低得点プレイヤー保護の条件付き奪取）。
+catan_base.victory_condition,WIN,勝利点が10に到達したプレイヤーが勝つ。,end,scoreThreshold,exact,rulebook_jp5_pdf,TBD,出典: rulebook_jp5_pdf（p.TBD／勝利点到達条件がend-score語彙と一致）。
+catan_base.longest_road_bonus,WIN,最長道路カードを保持するプレイヤーが勝利点2を得る。,achievement,longestRoad,derived,rulebook_jp5_pdf,TBD,出典: rulebook_jp5_pdf（p.TBD／継続的ボーナスをachievement語彙で表す）。
+catan_base.largest_army_bonus,WIN,最大騎士力カードを保持するプレイヤーが勝利点2を得る。,achievement,largestArmy,derived,rulebook_jp5_pdf,TBD,出典: rulebook_jp5_pdf（p.TBD／軍隊規模ボーナスをachievement語彙で表す）。
+catan_base.variant.base_novice,VARIANT,初心者向けルールセットで盗賊奪取が任意となる。,option,novicePreset,exact,official_rules_web,,出典: official_rules_web（初心者向けプリセットの有効化）。
