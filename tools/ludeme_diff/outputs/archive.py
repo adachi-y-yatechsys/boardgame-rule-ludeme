@@ -22,6 +22,7 @@ class ArchiveMetadata:
     artifact_path: str
     files: Mapping[str, str]
     inputs: Mapping[str, str]
+    glossary_actions: list[dict[str, str]]
 
     def as_dict(self, *, relative_to: Path | None = None) -> dict[str, Any]:
         """Serialise the metadata into a JSON friendly dictionary."""
@@ -55,6 +56,7 @@ class ArchiveMetadata:
             "artifact_path": artifact_display,
             "files": dict(self.files),
             "inputs": dict(self.inputs),
+            "glossary_actions": list(self.glossary_actions),
         }
 
 
@@ -110,6 +112,7 @@ class ArchiveRecord:
                 "diff_verify_results": "diff_verify_results.json",
                 "slack_payload": "slack_payload.json",
             },
+            "glossary_actions": payload.get("glossary_actions", []),
         }
 
         (self.path / "metadata.json").write_text(
@@ -156,6 +159,7 @@ def load_archive_metadata(archive_path: Path) -> ArchiveMetadata:
     artifact_path = metadata.get("artifact_path") or str(archive_path)
     files = metadata.get("files") or {}
     inputs = metadata.get("inputs") or {}
+    glossary_actions = metadata.get("glossary_actions") or []
 
     return ArchiveMetadata(
         run_id=run_id,
@@ -167,6 +171,7 @@ def load_archive_metadata(archive_path: Path) -> ArchiveMetadata:
         artifact_path=artifact_path,
         files=files,
         inputs=inputs,
+        glossary_actions=list(glossary_actions),
     )
 
 

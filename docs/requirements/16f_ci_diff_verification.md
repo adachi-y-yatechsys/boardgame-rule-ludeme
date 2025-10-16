@@ -20,7 +20,7 @@
 | 実行タイミング | `validate:dist` 完了後に実行し、成果物を再利用 |
 | 入力 | `reports/ludeme/diff_report.json`、`docs/mapping/matrix.csv`、Glossary（予定: `docs/glossary/ludeme_terms.csv`） |
 | 検証ロジック | `qa_text` で統一訳と一致しない差分がある場合は失敗。`citation`/`evidence` の status が `review` 以下の場合も失敗。 |
-| 出力 | `reports/ludeme/diff_verify_results.json`（検知内容・ステータス・対応ガイド）、`reports/ludeme/archive/<timestamp>-<label>/`（結果/Slack payload/metadata を保存）|
+| 出力 | `reports/ludeme/diff_verify_results.json`（検知内容・ステータス・対応ガイド・`glossary_actions`）、`reports/ludeme/slack_payload.json`（Glossary 行動一覧付き）、`reports/ludeme/archive/<timestamp>-<label>/`（結果/Slack payload/metadata に `glossary_actions` を保存）|
 | 通知 | GitHub Checks のアノテーション、Slack Webhook（#ludeme-ci）にサマリを送信（payload: `reports/ludeme/slack_payload.json`） |
 | リトライ | 差分が解消されるまで自動リトライなし。手動再実行のみ。 |
 | 履歴参照 | `tools.ludeme_diff.cli diff:archives list --latest --count 5` で最新 5 件を取得し、`diff:archives inspect <run-id>` で詳細を確認。結果は `reports/ludeme/archive/latest_summary.json` に保存し、Codex/Slack で共有。 |
@@ -34,6 +34,8 @@
 | P4-BL-04 | Slack 通知連携 | 失敗・警告時に Slack Webhook へ要約を送信する。 | Medium | 依頼者（統合担当） |
 | P4-BL-05 | 差分許容ルール定義 | テキスト差分の許容条件（例: 句読点のみの変更）を設定する。 | Low | 依頼者（QA 兼任） |
 | P4-BL-06 | 履歴アーカイブ | CLI に `--archive-dir`/`--archive-label` を追加し、CI が `reports/ludeme/archive/<timestamp>-run-xxxx/` に JSON・Slack payload・`metadata.json` を保存する。参照リンクは GitHub Checks/Slack/Codex へ共通記載。 | Medium | ChatGPT（CI 支援）／依頼者（運用承認） |
+
+2024-06 更新: Glossary 照合ロジックを `tools/ludeme_diff.rules.evaluate_entries` に統合し、`glossary_actions` 配列を Summary/Slack/Archive へ一貫出力する実装を完了。CI では `register_glossary_term`・`confirm_punctuation_diff`・`update_translation` の指示を参照し、フォローアップ対象を棚卸しできる。
 
 ## 判定基準
 - `diff:verify` ジョブで `qa_text` の統一訳「盗賊を移動し、隣接プレイヤーから資源カードを1枚奪取」が参照され、揺れが検知されるとジョブが失敗すること。
@@ -143,7 +145,7 @@
 - 4. 週次レビューで未対応フォローアップ件数を棚卸し、`docs/review/phase3_summary.md` に転記して Phase 4 レトロスペクティブへ引き継ぐ。
 - GitHub Checks 投稿では 50 件を超える注釈を切り捨て、詳細はアーティファクトで確認する運用とする。
 - フォローアップ: チェック失敗時は Codex スレッドで `@codex follow-up: diff verify failure` コメントを投稿し、失敗条件と Slack 通知ログを共有する。
-- 週次レビューでは Slack `#ludeme-ci` のスレッドと `reports/ludeme/archive/latest_summary.json` を突合し、担当（依頼者: CI オーナー）が `diff:archives inspect <run-id>` の結果を添付してエスカレーション/再実行計画を明文化する（Phase 4 M5 運用要件）。
+- 週次レビューでは Slack `#ludeme-ci` のスレッドと `reports/ludeme/archive/latest_summary.json` を突合し、担当（依頼者: CI オーナー）が `diff:archives inspect <run-id>` の結果を添付してエスカレーション/再実行計画を明文化する（Phase 4 M5 運用要件）。`metadata.json` 内の `glossary_actions` を確認し、未登録語や句読点差分のフォローアップ状況を週次棚卸しに反映する。
 
 ### 判定基準
 - `diff:verify` ジョブの YAML 雛形が PoC ブランチのみに影響する構成で定義されている。

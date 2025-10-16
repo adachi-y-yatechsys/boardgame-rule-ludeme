@@ -57,6 +57,7 @@ tests/
 - **差分許容ルール（P4-BL-05）**: `rules/tolerance.py` で Unicode NFKC 正規化と句読点除去により許容判定を実装。`warning` 判定は Slack/Codex フォローアップ対象。
 - **CI/通知（P4-BL-03/P4-BL-04）**: `.github/workflows/diff-verify.yml` を更新し、PoC ブランチで CLI 実行→成果物アップロード→GitHub Check→Slack 通知を自動化。`SLACK_WEBHOOK_URL` は PoC 限定シークレットを想定。
 - **履歴アーカイブ（P4-BL-06）**: CLI に `--archive-dir`/`--archive-label` オプションを追加し、`reports/ludeme/archive/<timestamp>-<label>/` に `diff_verify_results.json`・`slack_payload.json`・`metadata.json` を保存。GitHub Actions は `run-${{ github.run_number }}` を label として付与し、Check Summary と Slack の fields に保存先を追記する。`tools.ludeme_diff.cli diff:archives list|inspect` で `run-id`・`branch`・`status`・`artifact` を取得し、`reports/ludeme/archive/generate_summary.py` で最新 5 件の `latest_summary.json` を生成する運用に更新。
+- **Glossary 照合統合（2024-06 更新）**: `tools/ludeme_diff.rules.evaluate_entries` で `glossary_actions`（`entry_id`/`term_key`/`action_required`）を集計し、`summary.json`・Slack payload・`metadata.json` に同一配列を埋め込む。CI フェイル時は `register_glossary_term`・`confirm_punctuation_diff`・`update_translation` を確認し、棚卸しで未対応項目を追跡できるようになった。
 - **週次レビュー導線（M5 対応）**: Slack `#ludeme-ci` チャンネルに `latest_summary.json` のアップロードをアクション化し、担当（依頼者: 運用承認）が毎週月曜に `diff:archives list --latest --count 5` と Codex スレッド棚卸しを実施。必要に応じて `diff:archives inspect <run-id>` で詳細確認し、再実行依頼やエスカレーションを定型化する。
 - **担当と期限**: CLI/Glossary 実装: ChatGPT（CI 支援） 2024-05-20 レビューまで。CI/通知統合: 依頼者（CI オーナー） 2024-05-22 チェック確認。Slack テンプレ承認: 依頼者（統合担当） 2024-05-24。アーカイブ機能: ChatGPT（CI 支援） 2024-05-24 実装、運用承認: 依頼者（CI オーナー） 2024-05-27。
 
@@ -93,6 +94,7 @@ tests/
 1. `diff:verify` 失敗時に Slack 通知と同時に Codex コメントテンプレを投稿（担当・期限・再実行条件を記録）。テンプレートは `Archive:`・`Checks:`・`Slack:`・`Re-run:` 行を含め、`reports/ludeme/archive/<timestamp>-run-xxxx/metadata.json` へのリンクを貼る。
 2. 対応完了後に同スレッドへ結果報告（コミット ID / CI リンク）を残し、`resolved` を明示。更新内容と再実行日時を追記し、アーカイブディレクトリの `metadata.json` に記載された `status_counts` の変化を引用する。
 3. 週次で未クローズのフォローアップを棚卸しし、Phase 4 レトロスペクティブに持ち込む。最新 3 件のアーカイブを確認し、再実行ガイドが遵守されたかをチェックする。
+4. `diff:archives inspect <run-id>` を実行し、`metadata.json` に保存された `glossary_actions` を確認。`register_glossary_term` や `confirm_punctuation_diff` の未消化分を棚卸しメモに転記し、次回レビューの TODO として管理する。
 
 ### 判定基準
 - Codex コメントテンプレが `docs/requirements/16f_ci_diff_verification.md` と一致し、運用者が迷わない。
