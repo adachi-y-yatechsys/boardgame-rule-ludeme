@@ -59,15 +59,28 @@ AGENTS.md (本書)
 ---
 
 ## 5. ワークフロー（Phase）
-- **Phase 1: Checklist & Mapping**
+- **Phase 1: Checklist & Mapping**（`docs/requirements/16e_poc_plan.md` 手順1-2）
   - 目的: KPI チェックリストと Catan seed 10件の仮マッピングを作成。
   - 成果物: `docs/checklists/kpi.md`、`docs/mapping/matrix.csv`、PR。
-- **Phase 2: CI Integration**
+- **Phase 2: CI Integration**（`docs/requirements/16e_poc_plan.md` 手順3-4）
   - 目的: validate → alloy → build → validate:dist + overlay 検証の自動化。
   - 成果物: `reports/ludeme/*.csv|json`、CI 結果の要約、PR。
-- **Phase 3: レポート & 導入判断**
+- **Phase 3: レポート & 導入判断**（`docs/requirements/16e_poc_plan.md` 手順5）
   - 目的: KPI 判定、リスク/メンテ負荷、段階導入案の提示。
   - 成果物: `docs/` 追記、最終レビュー用 PR。
+
+### Phase 進捗チェックリスト
+- [ ] Phase 1: Checklist & Mapping 完了
+  - [ ] `docs/checklists/kpi.md` に KPI 3軸の記述と DOR/DOD を反映した
+  - [ ] `docs/mapping/matrix.csv` に 10 件以上を登録し `notes` へ出典/理由を追記した
+  - [ ] PR "Ludeme PoC/phase-1: checklist & mapping" を作成した
+- [ ] Phase 2: CI Integration 完了
+  - [ ] validate → alloy → build → validate:dist の手順を `docs/requirements` 系へ追記した
+  - [ ] `reports/ludeme/` に差分レポート（Q&A / citations / evidence）を出力した
+  - [ ] PR "Ludeme PoC/phase-2: CI integration & reports" を作成した
+- [ ] Phase 3: レポート & 導入判断 完了
+  - [ ] KPI 3軸の判定結果とリスク/次アクションを `docs/` に記録した
+  - [ ] 法務承認 (`docs/legal/approval.md`) を更新し、導入判断の PR を作成した
 
 ---
 
