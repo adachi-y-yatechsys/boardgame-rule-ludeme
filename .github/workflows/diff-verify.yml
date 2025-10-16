@@ -36,6 +36,7 @@ jobs:
         id: diff_verify
         continue-on-error: true
         run: |
+          BRANCH_NAME="${{ github.head_ref || github.ref_name }}"
           python -m tools.ludeme_diff.cli verify \
             --report reports/ludeme/diff_report.json \
             --matrix docs/mapping/matrix.csv \
@@ -44,7 +45,18 @@ jobs:
             --slack-payload reports/ludeme/slack_payload.json \
             --archive-dir reports/ludeme/archive \
             --archive-label run-${{ github.run_number }} \
+            --run-id ${{ github.run_id }} \
+            --branch "$BRANCH_NAME" \
             --format json
+
+      - name: Summarize diff archives
+        if: always()
+        run: |
+          python -m tools.ludeme_diff.cli diff:archives list \
+            --archive-dir reports/ludeme/archive \
+            --latest \
+            --count 5 \
+            --output reports/ludeme/archive/latest_summary.json
 
       - name: Augment Slack payload with run metadata
         if: always()
@@ -65,9 +77,22 @@ jobs:
           payload = json.loads(slack_path.read_text(encoding='utf-8'))
           results_path = Path('reports/ludeme/diff_verify_results.json')
           archive_path = None
+          latest_entry = None
+          summary_path = Path('reports/ludeme/archive/latest_summary.json')
+          if summary_path.exists():
+              try:
+                  summary_payload = json.loads(summary_path.read_text(encoding='utf-8'))
+              except json.JSONDecodeError:
+                  summary_payload = []
+              if summary_payload:
+                  latest_entry = summary_payload[0]
+
           if results_path.exists():
               results = json.loads(results_path.read_text(encoding='utf-8'))
               archive_path = results.get('archive', {}).get('path')
+              archive_url = results.get('archive', {}).get('artifact_path')
+          else:
+              archive_url = None
 
           repo = os.environ['GITHUB_REPOSITORY']
           run_id = os.environ['GITHUB_RUN_ID']
@@ -90,6 +115,11 @@ jobs:
               upsert('Re-run', f"workflow_dispatch (run-{run_number})")
               if archive_path:
                   upsert('Archive', archive_path)
+              if latest_entry:
+                  latest_link = latest_entry.get('artifact_path') or archive_url or run_url
+                  latest_run_id = latest_entry.get('run_id', 'n/a')
+                  upsert('Latest Archive', f"{latest_run_id}: {latest_link}")
+                  upsert('Inspect', f"python -m tools.ludeme_diff.cli diff:archives inspect {latest_run_id}")
 
           slack_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding='utf-8')
           PY
@@ -102,6 +132,7 @@ jobs:
           path: |
             reports/ludeme/diff_verify_results.json
             reports/ludeme/slack_payload.json
+            reports/ludeme/archive/latest_summary.json
             reports/ludeme/archive
 
       - name: Publish GitHub Check

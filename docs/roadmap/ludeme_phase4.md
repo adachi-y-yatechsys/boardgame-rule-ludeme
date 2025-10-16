@@ -14,7 +14,7 @@
 | M2: PoC ブランチ起動 | `feature/phase4-diff-verify-poc` で CLI スタブと `diff:verify` ワークフローを配置、Dry Run 実施 | 2024-05-17 | ChatGPT（CI 支援） | M1 完了 |
 | M3: 通知連携検証 | Slack Webhook 仮接続、GitHub Checks アノテーション確認、Codex で対応ログ運用開始 | 2024-05-22 | 依頼者（統合担当）、ChatGPT（CI 支援） | M2 完了、Slack テスト環境 |
 | M4: 差分許容ルール評価 | 許容ルール `rules/tolerance.py` の閾値レビュー、Glossary 更新フロー確立 | 2024-05-24 | 依頼者（QA 兼任） | M3 完了 |
-| M5: 履歴アーカイブ運用開始 | `diff:verify` 実行ログを `reports/ludeme/archive/` に保存し、参照手順を CI/Slack/Codex へ共通化 | 2024-05-27 | ChatGPT（CI 支援）／依頼者（運用承認） | M4 完了 |
+| M5: 履歴アーカイブ運用開始 | `diff:verify` 実行ログを `reports/ludeme/archive/` に保存し、`diff:archives` CLI と最新 5 件サマリで参照手順を CI/Slack/Codex へ共通化 | 2024-05-27 | ChatGPT（CI 支援）／依頼者（運用承認） | M4 完了 |
 
 ### モジュール骨子
 
@@ -56,7 +56,8 @@ tests/
 - **CLI/Glossary**: `tools/ludeme_diff` パッケージに loaders/rules/outputs を配置し、`ludeme-diff verify`（`python -m tools.ludeme_diff.cli verify`）で JSON, table 出力に対応。`tests/test_cli_verify.py` と `tests/test_rules_status.py` で E2E/ユニットをカバー。
 - **差分許容ルール（P4-BL-05）**: `rules/tolerance.py` で Unicode NFKC 正規化と句読点除去により許容判定を実装。`warning` 判定は Slack/Codex フォローアップ対象。
 - **CI/通知（P4-BL-03/P4-BL-04）**: `.github/workflows/diff-verify.yml` を更新し、PoC ブランチで CLI 実行→成果物アップロード→GitHub Check→Slack 通知を自動化。`SLACK_WEBHOOK_URL` は PoC 限定シークレットを想定。
-- **履歴アーカイブ（P4-BL-06）**: CLI に `--archive-dir`/`--archive-label` オプションを追加し、`reports/ludeme/archive/<timestamp>-<label>/` に `diff_verify_results.json`・`slack_payload.json`・`metadata.json` を保存。GitHub Actions は `run-${{ github.run_number }}` を label として付与し、Check Summary と Slack の fields に保存先を追記する。
+- **履歴アーカイブ（P4-BL-06）**: CLI に `--archive-dir`/`--archive-label` オプションを追加し、`reports/ludeme/archive/<timestamp>-<label>/` に `diff_verify_results.json`・`slack_payload.json`・`metadata.json` を保存。GitHub Actions は `run-${{ github.run_number }}` を label として付与し、Check Summary と Slack の fields に保存先を追記する。`tools.ludeme_diff.cli diff:archives list|inspect` で `run-id`・`branch`・`status`・`artifact` を取得し、`reports/ludeme/archive/generate_summary.py` で最新 5 件の `latest_summary.json` を生成する運用に更新。
+- **週次レビュー導線（M5 対応）**: Slack `#ludeme-ci` チャンネルに `latest_summary.json` のアップロードをアクション化し、担当（依頼者: 運用承認）が毎週月曜に `diff:archives list --latest --count 5` と Codex スレッド棚卸しを実施。必要に応じて `diff:archives inspect <run-id>` で詳細確認し、再実行依頼やエスカレーションを定型化する。
 - **担当と期限**: CLI/Glossary 実装: ChatGPT（CI 支援） 2024-05-20 レビューまで。CI/通知統合: 依頼者（CI オーナー） 2024-05-22 チェック確認。Slack テンプレ承認: 依頼者（統合担当） 2024-05-24。アーカイブ機能: ChatGPT（CI 支援） 2024-05-24 実装、運用承認: 依頼者（CI オーナー） 2024-05-27。
 
 ### 失敗条件と通知パターン

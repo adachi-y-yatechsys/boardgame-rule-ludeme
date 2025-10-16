@@ -2,12 +2,23 @@
 
 from .summary import build_result_payload, render_table_summary
 from .slack import build_slack_payload
-from .archive import prepare_archive, ArchiveRecord
+from .archive import (
+    ArchiveRecord,
+    ArchiveMetadata,
+    prepare_archive,
+    load_archive_metadata,
+    list_archives,
+    find_archive_by_run_id,
+)
 
 __all__ = [
     "build_result_payload",
     "render_table_summary",
     "build_slack_payload",
-    "prepare_archive",
     "ArchiveRecord",
+    "ArchiveMetadata",
+    "prepare_archive",
+    "load_archive_metadata",
+    "list_archives",
+    "find_archive_by_run_id",
 ]
