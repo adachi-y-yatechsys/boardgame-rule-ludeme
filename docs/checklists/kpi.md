@@ -27,8 +27,8 @@
   2. `TBD` となっているページ番号の補完計画を `notes` に記述する。
   3. CI で `validate:models` → `check:alloy` → `build` → `validate:dist` を連続実行し、欠落を検出する。
 - **判定基準**:
-  - [ ] `evidence_source_id/page/loc` 欄に欠落がない（現状: `rulebook_jp5_pdf` が `p.TBD`、`official_rules_web` は `n/a` 記入でアンカー採番を Phase 2 で対応予定）。
-  - [ ] CI チェーンが Green で完走（現状: Phase 2 で実装予定、まだ手動確認のみ）。
+  - [ ] `evidence_source_id/page/loc` 欄に欠落がない（現状: `page` が `TBD` のまま14件、ルールブック差し戻し待ち）。
+- [ ] CI チェーンが Green で完走（現状: `docs/requirements/16c_ci_pipeline.md` に validate→alloy→build→validate:dist を手順化済み、`python -m tools.ludeme_diff.cli verify` のローカル実行で `reports/ludeme/diff_verify_results.json` が `success` を記録。`npm run validate:*` 系スクリプトは未提供のため CI 連結は依頼者側で要整備）。
   - [x] 差分レポートで Q&A と citations が PoC 前後で整合（現状: `qa_text`/`citation` の差分が収束済み）。
 - **参考**: `docs/requirements/16e_poc_plan.md`
 
@@ -40,7 +40,7 @@
   3. 定期的に配布物を棚卸しし、Ludii バイナリや `.lud` が混入していないかを確認する。
 - **判定基準**:
   - [x] Ludii/Ludeme 配布物を同梱・改変していない（現状: 配布物なし、棚卸し計画は Phase 2 で更新予定）。
-  - [x] `notes` 欄に引用元メモを記録（現状: ルールブック/公式サイトの参照を追記済み、URL アンカーは Phase 2 で補完）。
+  - [ ] `notes` 欄に引用元メモを記録（現状: rulebook_jp5_pdf / official_rules_web の URL とページ補完が未着手）。
   - [ ] 法務レビューの承認記録を更新（現状: `docs/legal/approval.md` での記録待ち）。
 - **参考**: `docs/legal/approval.md`
 
@@ -48,8 +48,8 @@
 
 | KPI軸 | diff_report ステータス集計 | リスク/備考 |
 | --- | --- | --- |
-| 粒度一致度 | `qa_text` 更新1件 = **confirmed** | `robber` 系 3 件を `exact` 化済み。SETUP/PRODUCTION の語彙整備と CI テンプレート化が Phase 2 の宿題。 |
-| エビデンス適合度 | `citation` 追加1件 = **confirmed**／`evidence` 変化なし1件 = **n/a** | ルールブックのページ差し戻しを待ちつつ、CI 手順化を準備。 |
+| 粒度一致度 | `qa_text` 更新1件 = **confirmed** | 派生語彙の定義と CI テンプレート化が Phase 2 の宿題。 |
+| エビデンス適合度 | `diff_verify_results.json` で `qa_text`/`citation`/`evidence` がすべて **info** 判定 | `npm` 系チェーンが未整備のため、Phase 2 CI では diff verify 成果物を先行共有。 |
 | ライセンス整合度 | 該当差分なし | 出典メモの記載ルールを Phase 1.5 で策定予定。 |
 
 ## DOR/DOD トラッキング
@@ -64,8 +64,7 @@
 ## 未解決事項リスト
 - **Phase 2 readiness**: Phase 1 成果物（チェックリスト／マッピング／PR）が揃ったため、CI 手順と差分レポート整備に向けて Phase 2 を開始可能。前提として残るページ番号確定と glossary 追補は Phase 2 のフォローアップに含める。
 - 粒度評価の判定ルールを `mapping_type` 以外にも定義し、CI で測定できる指標に落とし込む。
-- `rulebook_jp5_pdf` のページ番号確定と `official_rules_web` のアンカー ID を収集する。
-- エビデンス整合チェックを自動化する CI 手順（Phase 2 で実装予定）を整理する。
+- エビデンス整合チェックを自動化する CI 手順（Phase 2 で実装予定）を整理する。`npm run validate:*` 系ジョブの雛形が未提供なため、依頼者と要件すり合わせが必要。
 - ライセンス監査の承認フロー（担当者・記録場所・頻度）を法務と確認する。
 - 差分レポートの `qa_text` 統一訳（盗賊アクション＝移動＋資源カード1枚奪取）が維持されているかを Phase 2 レポートでモニタリングする。
 - SETUP (`tileArrangement` / `placeSettlementRoad` / `trimBoard`) と TURN (`distributeResources`) の語彙を glossary へ登録し、`exact` 判定へ引き上げる余地をレビューする。

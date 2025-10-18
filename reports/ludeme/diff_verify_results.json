@@ -1,0 +1,83 @@
+{
+  "status_counts": {
+    "failure": 0,
+    "warning": 0,
+    "info": 3
+  },
+  "summary": "Phase 4 diff verification concluded with 0 failure(s), 0 warning(s), 3 info entries. Overall conclusion: success.",
+  "conclusion": "success",
+  "findings": [
+    {
+      "entry_id": "qna-001",
+      "field": "qa_text",
+      "severity": "info",
+      "message": "Translation matches glossary",
+      "action_required": null,
+      "term_key": "moveRobberSteal",
+      "tolerance": {
+        "matches": true,
+        "tolerated": false,
+        "canonical_normalized": "盗賊を移動し、隣接プレイヤーから資源カードを1枚奪取する",
+        "candidate_normalized": "盗賊を移動し、隣接プレイヤーから資源カードを1枚奪取する",
+        "reason": ""
+      }
+    },
+    {
+      "entry_id": "qna-001",
+      "field": "citation",
+      "severity": "info",
+      "message": "citation status 'confirmed' accepted",
+      "action_required": null,
+      "term_key": null,
+      "tolerance": null
+    },
+    {
+      "entry_id": "qna-001",
+      "field": "evidence",
+      "severity": "info",
+      "message": "evidence status 'confirmed' accepted",
+      "action_required": null,
+      "term_key": null,
+      "tolerance": null
+    }
+  ],
+  "glossary_actions": [],
+  "checks_payload": {
+    "conclusion": "success",
+    "annotations": [
+      {
+        "path": "reports/ludeme/diff_report.json",
+        "annotation_level": "notice",
+        "message": "Translation matches glossary",
+        "title": "qa_text (qna-001)",
+        "start_line": 1,
+        "end_line": 1
+      },
+      {
+        "path": "reports/ludeme/diff_report.json",
+        "annotation_level": "notice",
+        "message": "citation status 'confirmed' accepted",
+        "title": "citation (qna-001)",
+        "start_line": 1,
+        "end_line": 1
+      },
+      {
+        "path": "reports/ludeme/diff_report.json",
+        "annotation_level": "notice",
+        "message": "evidence status 'confirmed' accepted",
+        "title": "evidence (qna-001)",
+        "start_line": 1,
+        "end_line": 1
+      }
+    ]
+  },
+  "archive": {
+    "path": "reports/ludeme/archive/20251018T234227439031Z-local-run",
+    "name": "20251018T234227439031Z-local-run",
+    "timestamp": "20251018T234227439031Z",
+    "label": "local-run",
+    "run_id": null,
+    "branch": null,
+    "artifact_path": "reports/ludeme/archive/20251018T234227439031Z-local-run"
+  }
+}
