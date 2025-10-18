@@ -15,9 +15,9 @@
   2. 各行に `ludeme.category` と `ludeme.term` を暫定割り当てし、`mapping_type` で一致度を分類する。
   3. `notes` 欄へ UI/UX 影響や派生理由を記録する。
 - **判定基準**:
-  - [x] 代表 10 件（SETUP/TURN/WIN/RESOLVE 各 2 件以上）を登録済み（現状: SETUP=3, TURN=2, RESOLVE=4, WIN=3, VARIANT=2）。
-  - [x] `mapping_type` を `exact/derived/hold` で記録し、派生理由を `notes` に明示した。
-  - [ ] 「完全一致（`exact`）」の割合が 70% 以上（現状: 3/14 ≒ 21%、派生語彙の設計が追加課題）。
+  - [x] 代表 10 件（SETUP=3, TURN=2, RESOLVE=3, WIN=3, VARIANT=1）を登録済み。
+  - [x] `mapping_type` を `exact/derived/hold` で記録し、`notes` に派生理由と参照メモを明示した。
+  - [ ] 「完全一致（`exact`）」の割合が 70% 以上（現状: 8/13 ≒ 61.5%、`robber` 系 3 件を glossary 確認の上 `exact` に格上げ済み。残タスク: `tileArrangement` など基礎 SETUP の語彙化）。
 - **参考**: `docs/mapping/matrix.csv`
 
 ### エビデンス記述適合度（Evidence Compatibility）
@@ -62,10 +62,12 @@
   - [ ] ドキュメント（16* 章）が最新化され、手順が追記されている（現状: 16 系列は骨子あり、検証手順を追記予定）。
 
 ## 未解決事項リスト
+- **Phase 2 readiness**: Phase 1 成果物（チェックリスト／マッピング／PR）が揃ったため、CI 手順と差分レポート整備に向けて Phase 2 を開始可能。前提として残るページ番号確定と glossary 追補は Phase 2 のフォローアップに含める。
 - 粒度評価の判定ルールを `mapping_type` 以外にも定義し、CI で測定できる指標に落とし込む。
 - エビデンス整合チェックを自動化する CI 手順（Phase 2 で実装予定）を整理する。`npm run validate:*` 系ジョブの雛形が未提供なため、依頼者と要件すり合わせが必要。
 - ライセンス監査の承認フロー（担当者・記録場所・頻度）を法務と確認する。
 - 差分レポートの `qa_text` 統一訳（盗賊アクション＝移動＋資源カード1枚奪取）が維持されているかを Phase 2 レポートでモニタリングする。
+- SETUP (`tileArrangement` / `placeSettlementRoad` / `trimBoard`) と TURN (`distributeResources`) の語彙を glossary へ登録し、`exact` 判定へ引き上げる余地をレビューする。
 
 ## 参照ドキュメント
 - `docs/requirements/16_ludeme_integration.md`
