@@ -1,0 +1,26 @@
+{
+  "created_at": "20251018T234227439031Z",
+  "label": "local-run",
+  "run_id": "20251018T234227439031Z-local-run",
+  "branch": null,
+  "status": "success",
+  "status_counts": {
+    "failure": 0,
+    "warning": 0,
+    "info": 3
+  },
+  "conclusion": "success",
+  "inputs": {
+    "report": "reports/ludeme/diff_report.json",
+    "matrix": "docs/mapping/matrix.csv",
+    "glossary": "docs/glossary/ludeme_terms.csv",
+    "output": "reports/ludeme/diff_verify_results.json",
+    "slack_payload": "reports/ludeme/slack_payload.json"
+  },
+  "artifact_path": "reports/ludeme/archive/20251018T234227439031Z-local-run",
+  "files": {
+    "diff_verify_results": "diff_verify_results.json",
+    "slack_payload": "slack_payload.json"
+  },
+  "glossary_actions": []
+}

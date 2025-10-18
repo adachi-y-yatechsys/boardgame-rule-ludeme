@@ -1,0 +1,21 @@
+{
+  "text": "Ludeme diff verification report",
+  "attachments": [
+    {
+      "color": "#2eb886",
+      "title": "diff:verify success",
+      "text": "Failures: 0, Warnings: 0, Info: 3",
+      "fields": [
+        {
+          "title": "Glossary actions",
+          "value": "なし"
+        },
+        {
+          "title": "Archive",
+          "value": "reports/ludeme/archive/20251018T234227439031Z-local-run",
+          "short": false
+        }
+      ]
+    }
+  ]
+}
