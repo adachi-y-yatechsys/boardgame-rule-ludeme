@@ -11,6 +11,14 @@
 
 > Alloy の jar 配置は `tools/vendor/alloy/alloy6.jar` に固定（CIでキャッシュ可）。
 
+### セットアップ手順（ローカル）
+1. **Node.js 20.x を取得**: `nvm use 20.19.4` などで LTS 系列を有効化する。未インストールの場合は `nvm install 20.19.4` を実行。
+2. **依存パッケージを取得**: ルートで `npm install` を実行し、`ajv` / `ajv-formats` / `ajv-cli` を含む JSON Schema 検証ツールを取得する。
+   - オフライン環境向けに `tools/vendor/ajv/` / `tools/vendor/ajv-formats/` に簡易実装を同梱しているが、CI では npm から正式版を利用する。
+3. **Alloy CLI を配置**: [Alloy Analyzer 6](https://alloytools.org/download.html) から `alloy6.jar` をダウンロードし、`tools/vendor/alloy/alloy6.jar` として保存する。
+   - OpenJDK 21+ を前提に `java -jar tools/vendor/alloy/alloy6.jar <spec.als>` で実行可能であることを確認。
+4. **パイプラインの動作確認**: `npm run validate:models && npm run check:alloy && npm run build && npm run validate:dist` を実行し、`reports/ludeme/pipeline/` にログを残す。
+
 ## npm scripts 規約
 - `validate:models` — models の **JSON Schema 検証**（+ 参照整合チェックを内包）
 - `check:alloy` — **Alloy 検証**（base + series + patch_ext を順に）

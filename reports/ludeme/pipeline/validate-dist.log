@@ -1,0 +1,10 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> boardgame-rule-ludeme@0.2.0 validate:dist
+> node tools/scripts/validate-schemas.mjs dist
+
+
+Validating 1 file(s) for QA package outputs
+  ✔ dist/qa/ludeme-qa-package.json
+
+Schema validation completed successfully.
