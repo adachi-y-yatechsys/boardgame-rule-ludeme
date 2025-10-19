@@ -17,6 +17,19 @@
 - 必要なランタイム（Node 20.x、Alloy 6、Ajv CLI など）とセットアップ手順を `docs/requirements/13_tooling_and_commands.md` および本書へ追記する。
 - npm チェーンのローカル実行ログと生成物（`dist/**`、`logs/**` など）を `reports/ludeme/` 配下に保存し、`tools.ludeme_diff.cli verify` の結果と合わせて Phase 2 成果物として共有する。
 
+### Phase 2 実績サマリ（2025-10-19）
+- `npm run validate:models && npm run check:alloy && npm run build && npm run validate:dist` をローカル実行し、各ログを `reports/ludeme/pipeline/` に保存済み。
+- `python -m tools.ludeme_diff.cli verify ...` の結果を再取得し、`reports/ludeme/diff_verify_results.json` およびアーカイブ配下に反映済み。
+- `reports/ludeme/archive/latest_summary.json` を更新し、最新アーカイブ（`20251019T035553794319Z-local-run`）を参照するよう調整済み。
+- 以降は Phase 3 にて KPI 判定と導入判断のドキュメント化を進める。
+
+### 環境セットアップと検証フロー
+1. [`docs/requirements/13_tooling_and_commands.md`](13_tooling_and_commands.md) に従い Node.js 20.x／Ajv CLI／Alloy6 を導入し、`tools/vendor/alloy/alloy6.jar` を配置する。
+2. リポジトリ直下で `npm install` を実行し、`validate:models` / `validate:dist` から参照する Ajv ランタイムを揃える。
+3. `npm run validate:models && npm run check:alloy && npm run build && npm run validate:dist` を通し、`reports/ludeme/pipeline/*.log` に実行ログを収集する。
+4. `python -m tools.ludeme_diff.cli verify ... --archive-dir reports/ludeme/archive` を実行し、`diff_verify_results.json`／`slack_payload.json`／アーカイブを更新する。
+5. `reports/ludeme/archive/generate_summary.py` を併用し、最新アーカイブが `latest_summary.json` に反映されていることを確認する。
+
 ## 受け入れ基準
 - KPI 3軸達成
 - Q&A 出力が PoC 前後で文言・引用一致

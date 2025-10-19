@@ -72,12 +72,12 @@
     ]
   },
   "archive": {
-    "path": "reports/ludeme/archive/20251019T035553794319Z-local-run",
-    "name": "20251019T035553794319Z-local-run",
-    "timestamp": "20251019T035553794319Z",
+    "path": "reports/ludeme/archive/20251019T003325053651Z-local-run",
+    "name": "20251019T003325053651Z-local-run",
+    "timestamp": "20251019T003325053651Z",
     "label": "local-run",
     "run_id": null,
     "branch": null,
-    "artifact_path": "reports/ludeme/archive/20251019T035553794319Z-local-run"
+    "artifact_path": "reports/ludeme/archive/20251019T003325053651Z-local-run"
   }
 }

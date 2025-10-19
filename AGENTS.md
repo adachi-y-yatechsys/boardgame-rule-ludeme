@@ -74,10 +74,10 @@ AGENTS.md (本書)
   - [ ] `docs/checklists/kpi.md` に KPI 3軸の記述と DOR/DOD を反映した
   - [ ] `docs/mapping/matrix.csv` に 10 件以上を登録し `notes` へ出典/理由を追記した
   - [ ] PR "Ludeme PoC/phase-1: checklist & mapping" を作成した
-- [ ] Phase 2: CI Integration 完了
-  - [ ] validate → alloy → build → validate:dist の手順を `docs/requirements` 系へ追記した
-  - [ ] `reports/ludeme/` に差分レポート（Q&A / citations / evidence）を出力した
-  - [ ] PR "Ludeme PoC/phase-2: CI integration & reports" を作成した
+- [x] Phase 2: CI Integration 完了
+  - [x] validate → alloy → build → validate:dist の手順を `docs/requirements` 系へ追記した（`docs/requirements/13_tooling_and_commands.md` / `docs/requirements/16e_poc_plan.md`）。
+  - [x] `reports/ludeme/` に差分レポート（Q&A / citations / evidence）を出力した。
+  - [x] PR "Ludeme PoC/phase-2: CI integration & reports" を作成・マージした。
 - [ ] Phase 3: レポート & 導入判断 完了
   - [ ] KPI 3軸の判定結果とリスク/次アクションを `docs/` に記録した
   - [ ] 法務承認 (`docs/legal/approval.md`) を更新し、導入判断の PR を作成した

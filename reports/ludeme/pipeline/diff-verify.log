@@ -1,3 +1,5 @@
+<frozen runpy>:128: RuntimeWarning: 'tools.ludeme_diff.cli' found in sys.modules after import of package 'tools.ludeme_diff', but prior to execution of 'tools.ludeme_diff.cli'; this may result in unpredictable behaviour
+Archive stored at reports/ludeme/archive/20251019T035553794319Z-local-run
 {
   "status_counts": {
     "failure": 0,

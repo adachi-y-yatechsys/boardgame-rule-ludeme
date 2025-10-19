@@ -11,9 +11,18 @@
 
 > Alloy の jar 配置は `tools/vendor/alloy/alloy6.jar` に固定（CIでキャッシュ可）。
 
+### セットアップ手順（ローカル）
+1. **Node.js 20.x を取得**: `nvm use 20.19.4` などで LTS 系列を有効化する。未インストールの場合は `nvm install 20.19.4` を実行。
+2. **依存パッケージを取得**: ルートで `npm install` を実行し、`ajv` / `ajv-formats` / `ajv-cli` を含む JSON Schema 検証ツールを取得する。
+   - オフライン環境向けに `tools/vendor/ajv/` / `tools/vendor/ajv-formats/` に簡易実装を同梱しているが、CI では npm から正式版を利用する。
+3. **Alloy CLI を配置**: [Alloy Analyzer 6](https://alloytools.org/download.html) から `alloy6.jar` をダウンロードし、`tools/vendor/alloy/alloy6.jar` として保存する。
+   - OpenJDK 21+ を前提に `java -jar tools/vendor/alloy/alloy6.jar <spec.als>` で実行可能であることを確認。
+4. **パイプラインの動作確認**: `npm run validate:models && npm run check:alloy && npm run build && npm run validate:dist` を実行し、`reports/ludeme/pipeline/` にログを残す。
+
 ## npm scripts 規約
 - `validate:models` — models の **JSON Schema 検証**（+ 参照整合チェックを内包）
 - `check:alloy` — **Alloy 検証**（base + series + patch_ext を順に）
+  - Alloy CLI が未配置の場合は **即時失敗**。意図的にスキップする際は `ALLOW_ALLOY_SKIP=1` を付与して実行する。
 - `build` — **プリレンダー生成**（models + presets → dist/qa/**）
 - `validate:dist` — 出力（dist/**）を **QA Package スキーマ**で再検証
 - `package:review` — 監修提出用の **対象絞り込み出力**（series/edition/players/preset 指定）
@@ -26,7 +35,7 @@ npm run validate:models && npm run check:alloy && npm run build && npm run valid
 ## 返り値と失敗条件（必須）
 - いずれのコマンドも **非0 exit code** を失敗とする。
 - `validate:models` 失敗条件：Schema不一致／参照切れ（evidence.sourceId 不存在）／必須フィールド欠落。
-- `check:alloy` 失敗条件：`Valid`/`TagCoverage`/`PatchConsistent` のいずれかが **unsat** にならない（= 矛盾が検出された）場合は **exit 1**。
+- `check:alloy` 失敗条件：`Valid`/`TagCoverage`/`PatchConsistent` のいずれかが **unsat** にならない（= 矛盾が検出された）場合は **exit 1**。`tools/vendor/alloy/alloy6.jar` が未配置の場合も **exit 1** とする（CI での見逃し防止）。
 - `build` 失敗条件：ビルド時に参照欠落・パッチ適用不可・プリセット解決不可。
 - `validate:dist` 失敗条件：QA Package スキーマ不一致。
 
