@@ -1,0 +1,10 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> boardgame-rule-ludeme@0.2.0 validate:models
+> node tools/scripts/validate-schemas.mjs models
+
+
+Validating 1 file(s) for Ludeme model entries
+  ✔ models/catan.turn_production.json
+
+Schema validation completed successfully.

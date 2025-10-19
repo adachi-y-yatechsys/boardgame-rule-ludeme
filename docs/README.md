@@ -8,6 +8,11 @@ Ludeme 語彙を既存のボードゲーム・ルールモデルに非破壊で�
 - Issue: "Ludeme PoC: phase-1" を作成し、本READMEに沿ってチェックリストとマッピングを出力
 - PR: "Ludeme PoC/phase-1: checklist & mapping" を作成し、docs を更新
 
+### フェーズ進捗（2025-10-19 更新）
+- [x] **Phase 1: Checklist & Mapping** — KPI ドキュメントと初期マッピングを整備済み。
+- [x] **Phase 2: CI Integration** — `npm run validate:models && npm run check:alloy && npm run build && npm run validate:dist` を実行し、成果物とログを `reports/ludeme/` に保存済み。
+- [ ] **Phase 3: レポート & 導入判断** — KPI 判定とリスク整理を次フェーズで実施予定。
+
 ## Phase 2: CI 検証フロー
 
 ### 目的
@@ -38,3 +43,4 @@ Ludeme 語彙を既存のボードゲーム・ルールモデルに非破壊で�
 ### 参考
 - `AGENTS.md`
 - `reports/ludeme/diff_report.csv`、`reports/ludeme/diff_report.json`
+- [docs/requirements/13_tooling_and_commands.md](requirements/13_tooling_and_commands.md) — Node.js/Ajv/Alloy セットアップと npm scripts の詳細

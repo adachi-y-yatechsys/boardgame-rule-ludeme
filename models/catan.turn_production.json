@@ -1,0 +1,23 @@
+{
+  "id": "catan.base.turn_production",
+  "title": "Distribute resources to adjacent settlements after the dice roll",
+  "ludeme": "distributeResources",
+  "phase": "turn",
+  "status": "draft",
+  "summary": "Implements the resource distribution logic for standard Catan turns.",
+  "evidence": {
+    "sourceId": "rulebook_jp5_pdf",
+    "page": "18",
+    "note": "Translated guideline confirming robber interaction and production timing."
+  },
+  "links": [
+    {
+      "type": "glossary",
+      "ref": "distributeResources"
+    },
+    {
+      "type": "mapping",
+      "ref": "docs/mapping/matrix.csv#catan_base.turn_production"
+    }
+  ]
+}

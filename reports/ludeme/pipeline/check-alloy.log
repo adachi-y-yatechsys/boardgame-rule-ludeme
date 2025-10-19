@@ -1,0 +1,7 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> boardgame-rule-ludeme@0.2.0 check:alloy
+> node tools/scripts/check-alloy.mjs
+
+Alloy CLI (tools/vendor/alloy/alloy6.jar) is not present. Skipping Alloy checks.
+See docs/requirements/13_tooling_and_commands.md for installation instructions.

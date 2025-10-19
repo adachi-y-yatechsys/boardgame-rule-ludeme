@@ -1,0 +1,7 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> boardgame-rule-ludeme@0.2.0 build
+> node tools/scripts/build-artifacts.mjs
+
+Build completed. Dist artifact: dist/qa/ludeme-qa-package.json
+Build summary written to logs/build-summary.json
