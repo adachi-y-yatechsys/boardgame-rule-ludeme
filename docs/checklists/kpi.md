@@ -39,7 +39,7 @@
   2. 監査ログを `docs/legal/approval.md` に記録できるようチェックリストと連動させる。
   3. 定期的に配布物を棚卸しし、Ludii バイナリや `.lud` が混入していないかを確認する。
 - **判定基準**:
-  - [x] Ludii/Ludeme 配布物を同梱・改変していない（現状: 配布物なし、棚卸し計画は Phase 2 で更新予定）。
+  - [x] Ludii/Ludeme 配布物を同梱・改変していない（現状: 配布物なし、Phase 2 で棚卸し手順を追記済み）。
   - [ ] `notes` 欄に引用元メモを記録（現状: rulebook_jp5_pdf / official_rules_web の URL とページ補完が未着手）。
   - [ ] 法務レビューの承認記録を更新（現状: `docs/legal/approval.md` での記録待ち）。
 - **参考**: `docs/legal/approval.md`
@@ -48,8 +48,8 @@
 
 | KPI軸 | diff_report ステータス集計 | リスク/備考 |
 | --- | --- | --- |
-| 粒度一致度 | `qa_text` 更新1件 = **confirmed** | 派生語彙の定義と CI テンプレート化が Phase 2 の宿題。 |
-| エビデンス適合度 | `diff_verify_results.json` で `qa_text`/`citation`/`evidence` がすべて **info** 判定 | `npm` 系チェーンが未整備のため、Phase 2 CI では diff verify 成果物を先行共有。 |
+| 粒度一致度 | `qa_text` 更新1件 = **confirmed** | 派生語彙の定義と CI テンプレート化は Phase 3 の継続課題。 |
+| エビデンス適合度 | `diff_verify_results.json` で `qa_text`/`citation`/`evidence` がすべて **info** 判定 | npm チェーンは Phase 2 で整備済み。継続監視のため自動通知を Phase 3 で検討。 |
 | ライセンス整合度 | 該当差分なし | 出典メモの記載ルールを Phase 1.5 で策定予定。 |
 
 ## DOR/DOD トラッキング
@@ -58,15 +58,15 @@
   - [x] 追加 `ludeme` 属性の JSON 例が共有済み（現状: `docs/requirements/16_ludeme_integration.md` にサンプルあり）。
   - [ ] 参照ルールのページ番号が確定（現状: 監修待ち）。
 - **Definition of Done (DOD)**
-  - [ ] KPI 3軸が基準を満たす（粒度≥70%、CI Green、法務承認）。（現状: 粒度と法務が進行中、CI は Phase 2）。
-  - [ ] ドキュメント（16* 章）が最新化され、手順が追記されている（現状: 16 系列は骨子あり、検証手順を追記予定）。
+  - [ ] KPI 3軸が基準を満たす（粒度≥70%、CI Green、法務承認）。（現状: 粒度と法務が進行中、CI は Phase 2 で完了済み）。
+  - [ ] ドキュメント（16* 章）が最新化され、手順が追記されている（現状: Phase 2 追記は完了。Phase 3 方針の反映が残る）。
 
 ## 未解決事項リスト
-- **Phase 2 readiness**: Phase 1 成果物（チェックリスト／マッピング／PR）が揃ったため、CI 手順と差分レポート整備に向けて Phase 2 を開始可能。前提として残るページ番号確定と glossary 追補は Phase 2 のフォローアップに含める。
+- **Phase 3 readiness**: Phase 2 成果物（npm チェーン／diff verify アーカイブ）が揃ったため、KPI 判定と導入判断ドキュメントを Phase 3 で作成する。ページ番号確定と glossary 追補は引き続きフォローアップ対象。
 - 粒度評価の判定ルールを `mapping_type` 以外にも定義し、CI で測定できる指標に落とし込む。
-- エビデンス整合チェックを自動化する CI 手順（Phase 2 で実装予定）を整理する。`npm run validate:*` 系ジョブの雛形が未提供なため、依頼者と要件すり合わせが必要。
+- エビデンス整合チェックを自動化する CI 手順（Phase 2 で雛形整備済み）を Phase 3 でジョブ化し、`reports/ludeme/` の通知を自動化する。
 - ライセンス監査の承認フロー（担当者・記録場所・頻度）を法務と確認する。
-- 差分レポートの `qa_text` 統一訳（盗賊アクション＝移動＋資源カード1枚奪取）が維持されているかを Phase 2 レポートでモニタリングする。
+- 差分レポートの `qa_text` 統一訳（盗賊アクション＝移動＋資源カード1枚奪取）が維持されているかを Phase 3 レポートでモニタリングする。
 - SETUP (`tileArrangement` / `placeSettlementRoad` / `trimBoard`) と TURN (`distributeResources`) の語彙を glossary へ登録し、`exact` 判定へ引き上げる余地をレビューする。
 
 ## 参照ドキュメント
