@@ -38,3 +38,4 @@ Ludeme 語彙を既存のボードゲーム・ルールモデルに非破壊で�
 ### 参考
 - `AGENTS.md`
 - `reports/ludeme/diff_report.csv`、`reports/ludeme/diff_report.json`
+- [docs/requirements/13_tooling_and_commands.md](requirements/13_tooling_and_commands.md) — Node.js/Ajv/Alloy セットアップと npm scripts の詳細
