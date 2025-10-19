@@ -67,10 +67,23 @@ async function runAlloy(specPath) {
 }
 
 async function main() {
+  const allowMissing = ['1', 'true', 'yes'].includes(
+    String(process.env.ALLOW_ALLOY_SKIP ?? '').toLowerCase(),
+  );
+
   if (!(await jarExists())) {
-    console.warn('Alloy CLI (tools/vendor/alloy/alloy6.jar) is not present. Skipping Alloy checks.');
-    console.warn('See docs/requirements/13_tooling_and_commands.md for installation instructions.');
-    return;
+    const message =
+      'Alloy CLI (tools/vendor/alloy/alloy6.jar) is required but not present. Failing Alloy checks.';
+
+    if (allowMissing) {
+      console.warn(`${message} ALLOW_ALLOY_SKIP is set, so the step will be skipped.`);
+      console.warn('See docs/requirements/13_tooling_and_commands.md for installation instructions.');
+      return;
+    }
+
+    throw new Error(
+      `${message} Set ALLOW_ALLOY_SKIP=1 if you intend to bypass Alloy execution intentionally.`,
+    );
   }
 
   const specs = [

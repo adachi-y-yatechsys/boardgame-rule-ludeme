@@ -22,6 +22,7 @@
 ## npm scripts 規約
 - `validate:models` — models の **JSON Schema 検証**（+ 参照整合チェックを内包）
 - `check:alloy` — **Alloy 検証**（base + series + patch_ext を順に）
+  - Alloy CLI が未配置の場合は **即時失敗**。意図的にスキップする際は `ALLOW_ALLOY_SKIP=1` を付与して実行する。
 - `build` — **プリレンダー生成**（models + presets → dist/qa/**）
 - `validate:dist` — 出力（dist/**）を **QA Package スキーマ**で再検証
 - `package:review` — 監修提出用の **対象絞り込み出力**（series/edition/players/preset 指定）
@@ -34,7 +35,7 @@ npm run validate:models && npm run check:alloy && npm run build && npm run valid
 ## 返り値と失敗条件（必須）
 - いずれのコマンドも **非0 exit code** を失敗とする。
 - `validate:models` 失敗条件：Schema不一致／参照切れ（evidence.sourceId 不存在）／必須フィールド欠落。
-- `check:alloy` 失敗条件：`Valid`/`TagCoverage`/`PatchConsistent` のいずれかが **unsat** にならない（= 矛盾が検出された）場合は **exit 1**。
+- `check:alloy` 失敗条件：`Valid`/`TagCoverage`/`PatchConsistent` のいずれかが **unsat** にならない（= 矛盾が検出された）場合は **exit 1**。`tools/vendor/alloy/alloy6.jar` が未配置の場合も **exit 1** とする（CI での見逃し防止）。
 - `build` 失敗条件：ビルド時に参照欠落・パッチ適用不可・プリセット解決不可。
 - `validate:dist` 失敗条件：QA Package スキーマ不一致。
 
